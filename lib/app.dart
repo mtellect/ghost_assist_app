@@ -46,7 +46,7 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
   // Enable Stealth Mode by default
   await WindowStealth.setStealthMode(true);
   await windowManager.setIgnoreMouseEvents(false);
-  await windowManager.setOpacity(0.05);
+  await windowManager.setOpacity(1.0);
 
   // Initialize HotKeys
   final assistantProvider = getIt<AssistantProvider>();

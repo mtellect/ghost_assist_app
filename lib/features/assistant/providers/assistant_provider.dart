@@ -25,9 +25,9 @@ class AssistantProvider extends ChangeNotifier {
     required IAssistantService assistantService,
     required IAudioInterceptorService audioService,
     required ScreenCaptureService captureService,
-  })  : _assistantService = assistantService,
-        _audioService = audioService,
-        _captureService = captureService;
+  }) : _assistantService = assistantService,
+       _audioService = audioService,
+       _captureService = captureService;
 
   AssistantMode get mode => _currentMode;
   GeminiModel get geminiModel => _currentModel;
@@ -44,21 +44,21 @@ class AssistantProvider extends ChangeNotifier {
 
   Future<void> toggleStealth() async {
     _isStealth = !_isStealth;
-    
+
     // 1. Native stealth (invisible to screen sharing/recording)
+    // This is the real "Magic" - it hides the window from others but NOT you.
     await WindowStealth.setStealthMode(_isStealth);
-    
-    // 2. Interactivity (ignore mouse when in stealth)
-    // await windowManager.setIgnoreMouseEvents(_isStealth);
-    
-    // 3. User Visibility (slightly visible vs fully visible)
-    // We use a very low opacity in stealth so the user can still 'peek' at it 
-    // without it being distracting, or 0.0 for full invisibility.
-    await windowManager.setOpacity(_isStealth ? 0.05 : 1.0);
-    
-    // 4. Force background refresh
+
+    // 2. Ingnore for now - Interactivity (Optional: keep interactive so you can scroll/copy)
+    // await windowManager.setIgnoreMouseEvents(false);
+
+    // 3. User Visibility (Always 100% for the user)
+    await windowManager.setOpacity(1.0);
+
+    // 4. Force background refresh and focus
     await windowManager.setBackgroundColor(Colors.transparent);
-    
+    if (!_isStealth) await windowManager.focus();
+
     notifyListeners();
   }
 
@@ -75,10 +75,7 @@ class AssistantProvider extends ChangeNotifier {
   Future<void> captureFullScreen() async {
     final file = await _captureService.captureScreen();
     if (file != null) {
-      await ask(
-        'Analyze the full screen.',
-        screenCapture: file,
-      );
+      await ask('Analyze the full screen.', screenCapture: file);
     }
   }
 
