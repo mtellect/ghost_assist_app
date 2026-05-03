@@ -89,6 +89,15 @@ class _FloatingAssistantPanelState extends State<FloatingAssistantPanel> {
             const Spacer(),
             IconButton(
               icon: Icon(
+                provider.isListening ? Icons.mic : Icons.mic_none,
+                size: 18,
+                color: provider.isListening ? Colors.redAccent : Colors.white60,
+              ),
+              onPressed: provider.toggleListening,
+              tooltip: provider.isListening ? 'Stop Listening' : 'Start Listening',
+            ),
+            IconButton(
+              icon: Icon(
                 _isStealth ? Icons.visibility_off : Icons.visibility,
                 size: 18,
                 color: _isStealth ? Colors.greenAccent : Colors.redAccent,
@@ -148,6 +157,7 @@ class _FloatingAssistantPanelState extends State<FloatingAssistantPanel> {
   }
 
   Widget _buildFooter() {
+    final provider = context.watch<AssistantProvider>();
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -216,14 +226,28 @@ class _FloatingAssistantPanelState extends State<FloatingAssistantPanel> {
                 ),
               ),
               const Spacer(),
+              if (provider.isListening) ...[
+                _buildStatusDot(Colors.redAccent),
+                const SizedBox(width: 6),
+                const Text(
+                  'LISTENING',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.redAccent,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
               Icon(
-                context.read<AssistantProvider>().geminiModel == GeminiModel.proLatest ? Icons.bolt : Icons.flash_on,
+                provider.geminiModel == GeminiModel.proLatest ? Icons.bolt : Icons.flash_on,
                 size: 10,
-                color: context.read<AssistantProvider>().geminiModel == GeminiModel.proLatest ? Colors.amberAccent : Colors.blueAccent,
+                color: provider.geminiModel == GeminiModel.proLatest ? Colors.amberAccent : Colors.blueAccent,
               ),
               const SizedBox(width: 4),
               Text(
-                context.read<AssistantProvider>().geminiModel.label.toUpperCase(),
+                provider.geminiModel.label.toUpperCase(),
                 style: const TextStyle(fontSize: 9, color: Colors.white38, fontWeight: FontWeight.w600),
               ),
             ],

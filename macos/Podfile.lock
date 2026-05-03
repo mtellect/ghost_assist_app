@@ -1,5 +1,7 @@
 PODS:
   - FlutterMacOS (1.0.0)
+  - record_macos (1.2.0):
+    - FlutterMacOS
   - screen_capturer_macos (0.0.1):
     - FlutterMacOS
   - screen_retriever_macos (0.0.1):
@@ -14,6 +16,7 @@ PODS:
 
 DEPENDENCIES:
   - FlutterMacOS (from `Flutter/ephemeral`)
+  - record_macos (from `Flutter/ephemeral/.symlinks/plugins/record_macos/macos`)
   - screen_capturer_macos (from `Flutter/ephemeral/.symlinks/plugins/screen_capturer_macos/macos`)
   - screen_retriever_macos (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos`)
   - share_plus (from `Flutter/ephemeral/.symlinks/plugins/share_plus/macos`)
@@ -23,6 +26,8 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   FlutterMacOS:
     :path: Flutter/ephemeral
+  record_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/record_macos/macos
   screen_capturer_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/screen_capturer_macos/macos
   screen_retriever_macos:
@@ -36,6 +41,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
+  record_macos: 7f227161b93c49e7e34fe681c5891c8622c8cc8b
   screen_capturer_macos: 229306903c56767a7c7d3a48167ba303e95c6d29
   screen_retriever_macos: 452e51764a9e1cdb74b3c541238795849f21557f
   share_plus: 510bf0af1a42cd602274b4629920c9649c52f4cc

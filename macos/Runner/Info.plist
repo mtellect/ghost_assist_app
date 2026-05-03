@@ -28,5 +28,7 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Ghost Assist needs microphone access to listen to interviewer questions during live sessions.</string>
 </dict>
 </plist>

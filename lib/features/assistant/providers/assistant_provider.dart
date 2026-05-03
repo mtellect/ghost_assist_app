@@ -1,17 +1,19 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/assistant_mode.dart';
+import '../services/audio_interceptor_service.dart';
 import '../services/i_assistant_service.dart';
-
 import '../models/gemini_model.dart';
 
 class AssistantProvider extends ChangeNotifier {
   final IAssistantService _assistantService;
+  final AudioInterceptorService _audioService = AudioInterceptorService();
   
   AssistantMode _currentMode = AssistantMode.flutter;
   GeminiModel _currentModel = GeminiModel.proLatest;
   String _response = '';
   bool _isLoading = false;
+  bool _isListening = false;
   File? _lastCapture;
 
   AssistantProvider(this._assistantService);
@@ -20,6 +22,7 @@ class AssistantProvider extends ChangeNotifier {
   GeminiModel get geminiModel => _currentModel;
   String get response => _response;
   bool get isLoading => _isLoading;
+  bool get isListening => _isListening;
   File? get lastCapture => _lastCapture;
 
   void setMode(AssistantMode mode) {
@@ -30,6 +33,16 @@ class AssistantProvider extends ChangeNotifier {
   void setModel(GeminiModel model) {
     _currentModel = model;
     _assistantService.setModel(model);
+    notifyListeners();
+  }
+
+  Future<void> toggleListening() async {
+    if (_isListening) {
+      await _audioService.stopListening();
+    } else {
+      await _audioService.startListening();
+    }
+    _isListening = _audioService.isListening;
     notifyListeners();
   }
 
