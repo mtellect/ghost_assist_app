@@ -19,7 +19,11 @@ class AudioInterceptorService implements IAudioInterceptorService {
   Future<void> startListening({Function(String path)? onAutoStop}) async {
     try {
       if (await _recorder.hasPermission()) {
-        const config = RecordConfig();
+        const config = RecordConfig(
+          noiseSuppress: true,
+          echoCancel: true,
+          autoGain: true,
+        );
         final path = 'temp_audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
         await _recorder.start(config, path: path);
         _isListening = true;
