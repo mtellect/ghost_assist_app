@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../providers/assistant_provider.dart';
-import '../models/gemini_model.dart';
+import '../models/ai_model.dart';
 
 class AssistantHeader extends StatelessWidget {
   const AssistantHeader({super.key});
@@ -56,53 +56,28 @@ class AssistantHeader extends StatelessWidget {
             ),
 
             // Model Selector
-            PopupMenuButton<GeminiModel>(
+            PopupMenuButton<AIModel>(
               icon: Icon(
-                provider.geminiModel == GeminiModel.proLatest ? Icons.bolt : Icons.flash_on,
+                _getModelIcon(provider.aiModel),
                 size: 18,
-                color: provider.geminiModel == GeminiModel.proLatest
-                    ? Colors.amberAccent
-                    : Colors.blueAccent,
+                color: _getModelColor(provider.aiModel),
               ),
               onSelected: provider.setModel,
-              itemBuilder: (context) => GeminiModel.values.map((model) {
-                return PopupMenuItem<GeminiModel>(
-                  value: model,
-                  child: Row(
-                    children: [
-                      Icon(
-                        model == GeminiModel.proLatest ? Icons.bolt : Icons.flash_on,
-                        size: 16,
-                        color: model == GeminiModel.proLatest
-                            ? Colors.amberAccent
-                            : Colors.blueAccent,
-                      ),
-                      const SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            model.label,
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            model.description,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.white.withValues(alpha: 0.6),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (provider.geminiModel == model) ...[
-                        const Spacer(),
-                        const Icon(Icons.check, size: 14, color: Colors.greenAccent),
-                      ],
-                    ],
+              itemBuilder: (context) {
+                return [
+                  const PopupMenuItem(
+                    enabled: false,
+                    child: Text('GEMINI', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                   ),
-                );
-              }).toList(),
+                  ...AIModel.values.where((m) => m.provider == AIProvider.gemini).map((model) => _buildMenuItem(model, provider)),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem(
+                    enabled: false,
+                    child: Text('OPENAI', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.greenAccent)),
+                  ),
+                  ...AIModel.values.where((m) => m.provider == AIProvider.openai).map((model) => _buildMenuItem(model, provider)),
+                ];
+              },
               tooltip: 'Switch Model',
             ),
 
@@ -120,5 +95,38 @@ class AssistantHeader extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  PopupMenuItem<AIModel> _buildMenuItem(AIModel model, AssistantProvider provider) {
+    return PopupMenuItem<AIModel>(
+      value: model,
+      child: Row(
+        children: [
+          Icon(_getModelIcon(model), size: 16, color: _getModelColor(model)),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(model.label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+              Text(model.description, style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.6))),
+            ],
+          ),
+          if (provider.aiModel == model) ...[
+            const Spacer(),
+            const Icon(Icons.check, size: 14, color: Colors.greenAccent),
+          ],
+        ],
+      ),
+    );
+  }
+
+  IconData _getModelIcon(AIModel model) {
+    return model == AIModel.geminiPro || model == AIModel.gpt4o ? Icons.bolt : Icons.flash_on;
+  }
+
+  Color _getModelColor(AIModel model) {
+    if (model.provider == AIProvider.openai) return Colors.greenAccent;
+    return model == AIModel.geminiPro ? Colors.amberAccent : Colors.blueAccent;
   }
 }

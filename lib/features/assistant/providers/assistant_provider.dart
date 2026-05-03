@@ -5,7 +5,7 @@ import '../models/assistant_mode.dart';
 import '../services/i_audio_interceptor_service.dart';
 import '../services/i_assistant_service.dart';
 import '../services/screen_capture_service.dart';
-import '../models/gemini_model.dart';
+import '../models/ai_model.dart';
 import '../../../core/native/window_stealth.dart';
 
 class AssistantProvider extends ChangeNotifier {
@@ -14,7 +14,7 @@ class AssistantProvider extends ChangeNotifier {
   final ScreenCaptureService _captureService;
 
   AssistantMode _currentMode = AssistantMode.flutter;
-  GeminiModel _currentModel = GeminiModel.defaultModel;
+  AIModel _currentModel = AIModel.defaultModel;
   String _response = '';
   bool _isLoading = false;
   bool _isListening = false;
@@ -30,7 +30,7 @@ class AssistantProvider extends ChangeNotifier {
        _captureService = captureService;
 
   AssistantMode get mode => _currentMode;
-  GeminiModel get geminiModel => _currentModel;
+  AIModel get aiModel => _currentModel;
   String get response => _response;
   bool get isLoading => _isLoading;
   bool get isListening => _isListening;
@@ -79,7 +79,7 @@ class AssistantProvider extends ChangeNotifier {
     }
   }
 
-  void setModel(GeminiModel model) {
+  void setModel(AIModel model) {
     _currentModel = model;
     _assistantService.setModel(model);
     notifyListeners();

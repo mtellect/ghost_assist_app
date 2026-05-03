@@ -1,6 +1,7 @@
 import 'dart:io';
+import 'package:ghost_assist_app/features/assistant/models/ai_model.dart';
+
 import '../models/assistant_mode.dart';
-import '../models/gemini_model.dart';
 
 abstract class IAssistantService {
   /// Sends a prompt with optional image data to the AI model.
@@ -17,6 +18,6 @@ abstract class IAssistantService {
   /// Resets the current chat session and history.
   void resetChat();
 
-  /// Switches between different Gemini models.
-  void setModel(GeminiModel model);
+  /// Switches between different AI models.
+  void setModel(AIModel model);
 }

@@ -21,19 +21,19 @@ class StartUpService implements IStartUpService {
 
   @override
   Future<void> registerServices({required ApiEnvironmentEnum environment}) async {
-    final String geminiApiKey = const String.fromEnvironment('GEMINI_API_KEY');
+    final config = EnvConfigurationsModel.instance;
+    
+    getIt.registerLazySingleton<EnvConfigurationsModel>(() => config);
+    
+    // Set base URL in ApiClient
+    getIt<ApiClient>().updateBaseUrl(config.baseUrl);
 
-    getIt.registerLazySingleton<EnvConfigurationsModel>(
-      () => EnvConfigurationsModel(
-        environment: environment,
-        baseUrl: ApiUrls.getBaseUrl(environment),
+    getIt.registerLazySingleton<IAssistantService>(
+      () => AssistantService(
+        geminiApiKey: config.geminiApiKey,
+        openaiApiKey: config.openaiApiKey,
       ),
     );
-
-    // Set base URL in ApiClient
-    getIt<ApiClient>().updateBaseUrl(ApiUrls.getBaseUrl(environment));
-
-    getIt.registerLazySingleton<IAssistantService>(() => AssistantService(apiKey: geminiApiKey));
 
     getIt.registerLazySingleton<ScreenCaptureService>(() => ScreenCaptureService());
 

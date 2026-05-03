@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/assistant_provider.dart';
-import '../models/gemini_model.dart';
+import '../models/ai_model.dart';
 
 class StatusBar extends StatelessWidget {
   const StatusBar({super.key});
@@ -39,17 +39,26 @@ class StatusBar extends StatelessWidget {
           const SizedBox(width: 12),
         ],
         Icon(
-          provider.geminiModel == GeminiModel.proLatest ? Icons.bolt : Icons.flash_on,
+          _getModelIcon(provider.aiModel),
           size: 10,
-          color: provider.geminiModel == GeminiModel.proLatest ? Colors.amberAccent : Colors.blueAccent,
+          color: _getModelColor(provider.aiModel),
         ),
         const SizedBox(width: 4),
         Text(
-          provider.geminiModel.label.toUpperCase(),
+          provider.aiModel.label.toUpperCase(),
           style: const TextStyle(fontSize: 9, color: Colors.white38, fontWeight: FontWeight.w600),
         ),
       ],
     );
+  }
+
+  IconData _getModelIcon(AIModel model) {
+    return model == AIModel.geminiPro || model == AIModel.gpt4o ? Icons.bolt : Icons.flash_on;
+  }
+
+  Color _getModelColor(AIModel model) {
+    if (model.provider == AIProvider.openai) return Colors.greenAccent;
+    return model == AIModel.geminiPro ? Colors.amberAccent : Colors.blueAccent;
   }
 
   Widget _buildStatusDot(Color color) {
