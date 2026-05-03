@@ -101,6 +101,8 @@ class _PromptSettingsTabState extends State<PromptSettingsTab> {
                 Expanded(
                   child: TextField(
                     controller: provider.getSkillController(_selectedSkill),
+                    textAlign: TextAlign.start,
+                    textAlignVertical: TextAlignVertical.top,
                     maxLines: null,
                     expands: true,
                     style: const TextStyle(
