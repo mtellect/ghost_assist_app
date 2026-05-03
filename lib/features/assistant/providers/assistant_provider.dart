@@ -9,9 +9,9 @@ import '../../../core/native/window_stealth.dart';
 class AssistantProvider extends ChangeNotifier {
   final IAssistantService _assistantService;
   final IAudioInterceptorService _audioService;
-  
+
   AssistantMode _currentMode = AssistantMode.flutter;
-  GeminiModel _currentModel = GeminiModel.proLatest;
+  GeminiModel _currentModel = GeminiModel.flashLatest;
   String _response = '';
   bool _isLoading = false;
   bool _isListening = false;
@@ -21,8 +21,8 @@ class AssistantProvider extends ChangeNotifier {
   AssistantProvider({
     required IAssistantService assistantService,
     required IAudioInterceptorService audioService,
-  })  : _assistantService = assistantService,
-        _audioService = audioService;
+  }) : _assistantService = assistantService,
+       _audioService = audioService;
 
   AssistantMode get mode => _currentMode;
   GeminiModel get geminiModel => _currentModel;
@@ -63,14 +63,16 @@ class AssistantProvider extends ChangeNotifier {
         );
       }
     } else {
-      await _audioService.startListening(onAutoStop: (path) async {
-        _isListening = false;
-        notifyListeners();
-        await ask(
-          'I just spoke. Please transcribe my question and answer it based on the current mode.',
-          audioFile: File(path),
-        );
-      });
+      await _audioService.startListening(
+        onAutoStop: (path) async {
+          _isListening = false;
+          notifyListeners();
+          await ask(
+            'I just spoke. Please transcribe my question and answer it based on the current mode.',
+            audioFile: File(path),
+          );
+        },
+      );
       _isListening = _audioService.isListening;
       notifyListeners();
     }
