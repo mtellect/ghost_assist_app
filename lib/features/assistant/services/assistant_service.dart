@@ -10,7 +10,7 @@ import '../models/gemini_model.dart';
 class AssistantService implements IAssistantService {
   final String apiKey;
   late final Map<GeminiModel, GenerativeModel> _models;
-  GeminiModel _currentModel = GeminiModel.proLatest;
+  GeminiModel _currentModel = GeminiModel.defaultModel;
 
   late ChatSession _chatSession;
   final List<Content> _history = [];

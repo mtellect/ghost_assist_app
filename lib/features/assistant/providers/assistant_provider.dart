@@ -12,7 +12,7 @@ class AssistantProvider extends ChangeNotifier {
   final IAudioInterceptorService _audioService;
 
   AssistantMode _currentMode = AssistantMode.flutter;
-  GeminiModel _currentModel = GeminiModel.flashLatest;
+  GeminiModel _currentModel = GeminiModel.defaultModel;
   String _response = '';
   bool _isLoading = false;
   bool _isListening = false;

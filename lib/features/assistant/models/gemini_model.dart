@@ -7,4 +7,6 @@ enum GeminiModel {
   final String description;
 
   const GeminiModel(this.id, this.label, this.description);
+
+  static GeminiModel defaultModel = GeminiModel.flashLatest;
 }
