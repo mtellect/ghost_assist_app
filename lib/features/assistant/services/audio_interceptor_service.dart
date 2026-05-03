@@ -27,13 +27,15 @@ class AudioInterceptorService {
     }
   }
 
-  Future<void> stopListening() async {
+  Future<String?> stopListening() async {
     try {
-      await _recorder.stop();
+      final path = await _recorder.stop();
       _isListening = false;
-      GhostLogger.i('Audio interceptor stopped listening', tag: 'AudioService');
+      GhostLogger.i('Audio interceptor stopped listening. File: $path', tag: 'AudioService');
+      return path;
     } catch (e) {
       GhostLogger.e('Failed to stop audio interceptor', tag: 'AudioService', error: e);
+      return null;
     }
   }
 

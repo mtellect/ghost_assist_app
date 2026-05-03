@@ -38,17 +38,27 @@ class AssistantProvider extends ChangeNotifier {
 
   Future<void> toggleListening() async {
     if (_isListening) {
-      await _audioService.stopListening();
+      final path = await _audioService.stopListening();
+      _isListening = false;
+      notifyListeners();
+
+      if (path != null) {
+        // Automatically ask Gemini to analyze the audio
+        await ask(
+          'I just spoke. Please transcribe my question and answer it based on the current mode.',
+          audioFile: File(path),
+        );
+      }
     } else {
       await _audioService.startListening();
+      _isListening = _audioService.isListening;
+      notifyListeners();
     }
-    _isListening = _audioService.isListening;
-    notifyListeners();
   }
 
-  Future<void> ask(String prompt, {File? screenCapture}) async {
+  Future<void> ask(String prompt, {File? screenCapture, File? audioFile}) async {
     _isLoading = true;
-    _lastCapture = screenCapture;
+    if (screenCapture != null) _lastCapture = screenCapture;
     notifyListeners();
 
     try {
@@ -56,6 +66,7 @@ class AssistantProvider extends ChangeNotifier {
         mode: _currentMode,
         prompt: prompt,
         screenCapture: screenCapture,
+        audioFile: audioFile,
       );
     } catch (e) {
       _response = 'Error: $e';

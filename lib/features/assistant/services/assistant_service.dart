@@ -48,6 +48,7 @@ class AssistantService implements IAssistantService {
     required AssistantMode mode,
     required String prompt,
     File? screenCapture,
+    File? audioFile,
   }) async {
     final systemPrompt = getSystemPrompt(mode);
     
@@ -55,27 +56,33 @@ class AssistantService implements IAssistantService {
       final activeModel = _models[_currentModel]!;
       GhostLogger.d('Getting response using ${_currentModel.label}', tag: 'AssistantService');
 
+      final List<Part> parts = [
+        TextPart('$systemPrompt\n\n$prompt'),
+      ];
+
       if (screenCapture != null) {
         final imageBytes = await screenCapture.readAsBytes();
-        final content = Content.multi([
-          TextPart('$systemPrompt\n\n$prompt'),
-          DataPart('image/png', imageBytes),
-        ]);
-        
-        final response = await activeModel.generateContent([content]);
-        final responseText = response.text ?? 'No response from AI.';
-        
-        // Add to history
-        _history.add(content);
-        _history.add(Content.model([TextPart(responseText)]));
-        
-        return responseText;
-      } else {
-        final response = await _chatSession.sendMessage(
-          Content.text('$systemPrompt\n\n$prompt'),
-        );
-        return response.text ?? 'No response from AI.';
+        parts.add(DataPart('image/png', imageBytes));
       }
+
+      if (audioFile != null) {
+        final audioBytes = await audioFile.readAsBytes();
+        // m4a is typically audio/mp4 or audio/aac
+        parts.add(DataPart('audio/mp4', audioBytes));
+      }
+
+      final content = Content.multi(parts);
+      
+      // We use generateContent instead of sendMessage for multi-part data 
+      // as it's more reliable for images/audio in the current SDK version.
+      final response = await activeModel.generateContent([content]);
+      final responseText = response.text ?? 'No response from AI.';
+      
+      // Add to history
+      _history.add(content);
+      _history.add(Content.model([TextPart(responseText)]));
+      
+      return responseText;
     } catch (e, stack) {
       GhostLogger.e('Error generating response', tag: 'AssistantService', error: e, stackTrace: stack);
       return 'Error generating response: $e';

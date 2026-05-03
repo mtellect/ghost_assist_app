@@ -8,6 +8,7 @@ abstract class IAssistantService {
     required AssistantMode mode,
     required String prompt,
     File? screenCapture,
+    File? audioFile,
   });
 
   /// Provides context-specific instructions based on the interview mode.
