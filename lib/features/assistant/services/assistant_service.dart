@@ -5,35 +5,41 @@ import '../models/assistant_mode.dart';
 import 'i_assistant_service.dart';
 import '../../../core/utils/logger.dart';
 
+import '../models/gemini_model.dart';
+
 class AssistantService implements IAssistantService {
   final String apiKey;
-  late final GenerativeModel _proModel;
-  late final GenerativeModel _flashModel;
-  bool _usePro = true;
+  late final Map<GeminiModel, GenerativeModel> _models;
+  GeminiModel _currentModel = GeminiModel.proLatest;
 
   late ChatSession _chatSession;
   final List<Content> _history = [];
 
   AssistantService({required this.apiKey}) {
     GhostLogger.i('Initializing models (Key length: ${apiKey.length})...', tag: 'AssistantService');
-    _proModel = GenerativeModel(
-      model: 'gemini-pro-latest',
-      apiKey: apiKey,
-    );
-    _flashModel = GenerativeModel(
-      model: 'gemini-flash-latest',
-      apiKey: apiKey,
-    );
-    _chatSession = _proModel.startChat();
+    
+    _models = {
+      GeminiModel.proLatest: GenerativeModel(
+        model: GeminiModel.proLatest.id,
+        apiKey: apiKey,
+      ),
+      GeminiModel.flashLatest: GenerativeModel(
+        model: GeminiModel.flashLatest.id,
+        apiKey: apiKey,
+      ),
+    };
+
+    _chatSession = _models[_currentModel]!.startChat();
     GhostLogger.i('Models initialized successfully.', tag: 'AssistantService');
   }
 
   @override
-  void setUsePro(bool usePro) {
-    if (_usePro != usePro) {
-      _usePro = usePro;
+  void setModel(GeminiModel model) {
+    if (_currentModel != model) {
+      _currentModel = model;
+      GhostLogger.i('Switching to model: ${model.label}', tag: 'AssistantService');
       // Restart chat with new model to maintain consistency
-      _chatSession = (usePro ? _proModel : _flashModel).startChat(history: _history);
+      _chatSession = _models[model]!.startChat(history: _history);
     }
   }
 
@@ -46,8 +52,8 @@ class AssistantService implements IAssistantService {
     final systemPrompt = getSystemPrompt(mode);
     
     try {
-      final activeModel = _usePro ? _proModel : _flashModel;
-      GhostLogger.d('Getting response using ${_usePro ? "Gemini Pro" : "Gemini Flash"}', tag: 'AssistantService');
+      final activeModel = _models[_currentModel]!;
+      GhostLogger.d('Getting response using ${_currentModel.label}', tag: 'AssistantService');
 
       if (screenCapture != null) {
         final imageBytes = await screenCapture.readAsBytes();
@@ -78,7 +84,7 @@ class AssistantService implements IAssistantService {
 
   @override
   void resetChat() {
-    _chatSession = (_usePro ? _proModel : _flashModel).startChat();
+    _chatSession = _models[_currentModel]!.startChat();
     _history.clear();
   }
 

@@ -14,7 +14,7 @@ class ModeSelector extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: AssistantMode.values.map((mode) {
-          final isSelected = provider.currentMode == mode;
+          final isSelected = provider.mode == mode;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(

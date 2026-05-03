@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:ghost_assist_app/core/native/window_stealth.dart';
+import 'package:ghost_assist_app/features/assistant/models/gemini_model.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../providers/assistant_provider.dart';
@@ -95,14 +96,41 @@ class _FloatingAssistantPanelState extends State<FloatingAssistantPanel> {
               onPressed: _toggleStealth,
               tooltip: 'Stealth Mode',
             ),
-            IconButton(
+            PopupMenuButton<GeminiModel>(
               icon: Icon(
-                provider.usePro ? Icons.bolt : Icons.flash_on,
+                provider.geminiModel == GeminiModel.proLatest ? Icons.bolt : Icons.flash_on,
                 size: 18,
-                color: provider.usePro ? Colors.amberAccent : Colors.blueAccent,
+                color: provider.geminiModel == GeminiModel.proLatest ? Colors.amberAccent : Colors.blueAccent,
               ),
-              onPressed: () => provider.setUsePro(!provider.usePro),
-              tooltip: provider.usePro ? 'Using Gemini Pro' : 'Using Gemini Flash',
+              onSelected: provider.setModel,
+              itemBuilder: (context) => GeminiModel.values.map((model) {
+                return PopupMenuItem<GeminiModel>(
+                  value: model,
+                  child: Row(
+                    children: [
+                      Icon(
+                        model == GeminiModel.proLatest ? Icons.bolt : Icons.flash_on,
+                        size: 16,
+                        color: model == GeminiModel.proLatest ? Colors.amberAccent : Colors.blueAccent,
+                      ),
+                      const SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(model.label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                          Text(model.description, style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.6))),
+                        ],
+                      ),
+                      if (provider.geminiModel == model) ...[
+                        const Spacer(),
+                        const Icon(Icons.check, size: 14, color: Colors.greenAccent),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(),
+              tooltip: 'Switch Model',
             ),
             IconButton(
               icon: const Icon(Icons.refresh, size: 18, color: Colors.white38),
