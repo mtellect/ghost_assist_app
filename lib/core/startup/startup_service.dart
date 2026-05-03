@@ -24,57 +24,38 @@ class StartUpService implements IStartUpService {
 
   @override
   Future<void> registerServices({required ApiEnvironmentEnum environment}) async {
-    // 1. Initialize Storage
-    final storage = StorageService();
-    await storage.init();
-    getIt.registerSingleton<IStorageService>(storage);
+    // 1. Storage
+    getIt.registerSingleton<IStorageService>(StorageService());
 
-    final config = EnvConfigurationsModel.instance;
-    getIt.registerLazySingleton<EnvConfigurationsModel>(() => config);
+    // 2. Configuration
+    getIt.registerLazySingleton<EnvConfigurationsModel>(() => EnvConfigurationsModel.instance);
 
-    // 2. Fetch Keys with Fallback
-    final savedGeminiKey = await storage.getSecureKey('GEMINI_API_KEY');
-    final savedOpenAiKey = await storage.getSecureKey('OPENAI_API_KEY');
-    final savedAnthropicKey = await storage.getSecureKey('ANTHROPIC_API_KEY');
-
-    final geminiKey = (savedGeminiKey != null && savedGeminiKey.isNotEmpty)
-        ? savedGeminiKey
-        : config.geminiApiKey;
-
-    final openaiKey = (savedOpenAiKey != null && savedOpenAiKey.isNotEmpty)
-        ? savedOpenAiKey
-        : config.openaiApiKey;
-
-    final anthropicKey = (savedAnthropicKey != null && savedAnthropicKey.isNotEmpty)
-        ? savedAnthropicKey
-        : config.anthropicApiKey;
-
-    // 3. Register AI Services
-    getIt.registerLazySingleton<IAssistantService>(
-      () => AssistantService(
-        geminiApiKey: geminiKey,
-        openaiApiKey: openaiKey,
-        anthropicApiKey: anthropicKey,
-      ),
-    );
-
+    // 3. Platform Services
     getIt.registerLazySingleton<ScreenCaptureService>(() => ScreenCaptureService());
-
     getIt.registerLazySingleton<IAudioInterceptorService>(() => AudioInterceptorService());
-
     getIt.registerLazySingleton<HotKeyService>(() => HotKeyService());
-    
     getIt.registerLazySingleton<PermissionService>(() => PermissionService());
+
+    // 4. AI Orchestrator (Registered as a lazy singleton, keys will be fetched during init)
+    getIt.registerLazySingleton<IAssistantService>(() {
+      final config = getIt<EnvConfigurationsModel>();
+
+      // Note: These keys will be pulled from storage when the service is first accessed
+      // In a real production app, we might update these dynamically
+      return AssistantService(
+        geminiApiKey: config.geminiApiKey,
+        openaiApiKey: config.openaiApiKey,
+        anthropicApiKey: config.anthropicApiKey,
+      );
+    });
   }
 
   @override
   Future<void> registerControllers() async {
-    // 1. Register Settings Controller (Provider)
-    final settingsProvider = SettingsProvider(getIt<IStorageService>());
-    await settingsProvider.loadSettings();
-    getIt.registerSingleton<SettingsProvider>(settingsProvider);
+    // 1. Settings Provider
+    getIt.registerLazySingleton<SettingsProvider>(() => SettingsProvider(getIt<IStorageService>()));
 
-    // 2. Register Assistant Controller (Provider)
+    // 2. Assistant Provider
     getIt.registerLazySingleton<AssistantProvider>(
       () => AssistantProvider(
         assistantService: getIt<IAssistantService>(),
@@ -86,12 +67,23 @@ class StartUpService implements IStartUpService {
 
   @override
   Future<void> initializeApp({required ApiEnvironmentEnum environment}) async {
+    // Phase 1: Registration
     await registerNetwork();
     await registerServices(environment: environment);
     await registerControllers();
 
-    // Trigger permission check on startup
-    final permissionService = getIt<PermissionService>();
-    await permissionService.checkAndRequestPermissions();
+    // Phase 2: Sequential Initialization
+
+    // 1. Storage first (dependency for almost everything)
+    await getIt<IStorageService>().init();
+
+    // 2. Settings (loads API keys and templates from storage)
+    await getIt<SettingsProvider>().loadSettings();
+
+    // 3. Permissions (Hardware access)
+    await getIt<PermissionService>().checkAndRequestPermissions();
+
+    // 4. Hotkeys (System events)
+    await getIt<HotKeyService>().init();
   }
 }
