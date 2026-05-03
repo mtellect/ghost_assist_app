@@ -2,8 +2,8 @@ enum AIProvider { gemini, openai, anthropic }
 
 enum AIModel {
   // Gemini Models
-  geminiPro('gemini-1.5-pro-latest', 'Gemini 1.5 Pro', 'High Intelligence', AIProvider.gemini),
-  geminiFlash('gemini-1.5-flash-latest', 'Gemini 1.5 Flash', 'Ultra Fast', AIProvider.gemini),
+  geminiPro('gemini-pro-latest', 'Gemini Pro', 'High Intelligence', AIProvider.gemini),
+  geminiFlash('gemini-flash-latest', 'Gemini Flash', 'Ultra Fast', AIProvider.gemini),
   
   // OpenAI Models
   gpt4o('gpt-4o', 'GPT-4o', 'Omni Model (Top Tier)', AIProvider.openai),
