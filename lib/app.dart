@@ -22,9 +22,10 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
   final bool isDebug = environment.key == EnvironmentKeys.staging;
 
   WindowOptions windowOptions = WindowOptions(
-    size: const Size(400, 600),
+    size: const Size(600, 900),
+    minimumSize: const Size(450, 700),
+    maximumSize: const Size(600, 900),
     center: true,
-    // backgroundColor: isDebug ? const Color(0xFF1A1A1A) : Colors.transparent,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.hidden,
