@@ -8,7 +8,7 @@ import '../models/gemini_model.dart';
 class AssistantProvider extends ChangeNotifier {
   final IAssistantService _assistantService;
   
-  AssistantMode _currentMode = AssistantMode.dsa;
+  AssistantMode _currentMode = AssistantMode.flutter;
   GeminiModel _currentModel = GeminiModel.proLatest;
   String _response = '';
   bool _isLoading = false;

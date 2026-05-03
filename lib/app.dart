@@ -20,11 +20,12 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
 
   GhostLogger.i('Initializing window...', tag: 'App');
   final bool isDebug = environment.key == EnvironmentKeys.staging;
-  
+
   WindowOptions windowOptions = WindowOptions(
     size: const Size(400, 600),
     center: true,
-    backgroundColor: isDebug ? const Color(0xFF1A1A1A) : Colors.transparent,
+    // backgroundColor: isDebug ? const Color(0xFF1A1A1A) : Colors.transparent,
+    backgroundColor: Colors.transparent,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.hidden,
     alwaysOnTop: true,

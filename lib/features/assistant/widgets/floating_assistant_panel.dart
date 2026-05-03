@@ -198,6 +198,54 @@ class _FloatingAssistantPanelState extends State<FloatingAssistantPanel> {
               ),
             ],
           ),
+          const SizedBox(height: 12),
+          const Divider(height: 1, color: Colors.white10),
+          const SizedBox(height: 8),
+          // Status Bar
+          Row(
+            children: [
+              _buildStatusDot(_isStealth ? Colors.greenAccent : Colors.redAccent),
+              const SizedBox(width: 6),
+              Text(
+                _isStealth ? 'STEALTH ACTIVE' : 'STEALTH OFF (VISIBLE)',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: _isStealth ? Colors.greenAccent : Colors.redAccent,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const Spacer(),
+              Icon(
+                context.read<AssistantProvider>().geminiModel == GeminiModel.proLatest ? Icons.bolt : Icons.flash_on,
+                size: 10,
+                color: context.read<AssistantProvider>().geminiModel == GeminiModel.proLatest ? Colors.amberAccent : Colors.blueAccent,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                context.read<AssistantProvider>().geminiModel.label.toUpperCase(),
+                style: const TextStyle(fontSize: 9, color: Colors.white38, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusDot(Color color) {
+    return Container(
+      width: 6,
+      height: 6,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.5),
+            blurRadius: 4,
+            spreadRadius: 1,
+          ),
         ],
       ),
     );
