@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
-import '../../assistant/models/assistant_skill.dart';
 import '../widgets/settings_header.dart';
 import '../widgets/settings_footer.dart';
 import '../widgets/vault_settings_tab.dart';
@@ -17,46 +16,18 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final _geminiController = TextEditingController();
-  final _openaiController = TextEditingController();
-  final _anthropicController = TextEditingController();
-  
-  // New: Individual controllers for each skill
-  final Map<AssistantSkill, TextEditingController> _skillControllers = {};
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    final provider = context.read<SettingsProvider>();
-    _geminiController.text = provider.geminiKey;
-    _openaiController.text = provider.openaiKey;
-    _anthropicController.text = provider.anthropicKey;
-
-    // Initialize individual skill controllers
-    for (var skill in AssistantSkill.values) {
-      _skillControllers[skill] = TextEditingController(
-        text: provider.getCustomTemplate(skill) ?? '',
-      );
-    }
+    // Initialize the editing session in the provider
+    context.read<SettingsProvider>().startEditSession();
   }
 
-  Future<void> _saveAll() async {
+  Future<void> _handleSave() async {
     final provider = context.read<SettingsProvider>();
-
-    // Save Keys
-    await provider.saveKeys(
-      gemini: _geminiController.text,
-      openai: _openaiController.text,
-      anthropic: _anthropicController.text,
-    );
-
-    // Save Skill Templates
-    final Map<String, String> templates = {};
-    _skillControllers.forEach((skill, controller) {
-      templates[skill.name] = controller.text;
-    });
-    await provider.saveTemplates(templates);
+    await provider.saveSettingsFromSession();
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -69,12 +40,9 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
   @override
   void dispose() {
     _tabController.dispose();
-    _geminiController.dispose();
-    _openaiController.dispose();
-    _anthropicController.dispose();
-    for (var controller in _skillControllers.values) {
-      controller.dispose();
-    }
+    // Disposal is handled by the provider if it's app-wide, 
+    // but here we should be careful if the provider lives longer than the page.
+    // However, for this app, the provider is a singleton in GetIt/MultiProvider.
     super.dispose();
   }
 
@@ -97,20 +65,15 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                 Tab(text: 'SKILL PROMPTS'),
               ],
             ),
-            Expanded(
+            const Expanded(
               child: TabBarView(
-                controller: _tabController,
                 children: [
-                  VaultSettingsTab(
-                    geminiController: _geminiController,
-                    openaiController: _openaiController,
-                    anthropicController: _anthropicController,
-                  ),
-                  PromptSettingsTab(skillControllers: _skillControllers),
+                  VaultSettingsTab(),
+                  PromptSettingsTab(),
                 ],
               ),
             ),
-            SettingsFooter(onSave: _saveAll),
+            SettingsFooter(onSave: _handleSave),
           ],
         ),
       ),

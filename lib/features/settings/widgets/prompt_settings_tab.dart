@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../assistant/models/assistant_skill.dart';
+import '../providers/settings_provider.dart';
 
 class PromptSettingsTab extends StatefulWidget {
-  final Map<AssistantSkill, TextEditingController> skillControllers;
-
-  const PromptSettingsTab({
-    super.key,
-    required this.skillControllers,
-  });
+  const PromptSettingsTab({super.key});
 
   @override
   State<PromptSettingsTab> createState() => _PromptSettingsTabState();
@@ -18,6 +15,8 @@ class _PromptSettingsTabState extends State<PromptSettingsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<SettingsProvider>();
+
     return Row(
       children: [
         // Left Rail: Skill List
@@ -101,7 +100,7 @@ class _PromptSettingsTabState extends State<PromptSettingsTab> {
                 const SizedBox(height: 20),
                 Expanded(
                   child: TextField(
-                    controller: widget.skillControllers[_selectedSkill],
+                    controller: provider.getSkillController(_selectedSkill),
                     maxLines: null,
                     expands: true,
                     style: const TextStyle(

@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/settings_provider.dart';
 import 'settings_key_field.dart';
 
 class VaultSettingsTab extends StatelessWidget {
-  final TextEditingController geminiController;
-  final TextEditingController openaiController;
-  final TextEditingController anthropicController;
-
-  const VaultSettingsTab({
-    super.key,
-    required this.geminiController,
-    required this.openaiController,
-    required this.anthropicController,
-  });
+  const VaultSettingsTab({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<SettingsProvider>();
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -31,19 +26,19 @@ class VaultSettingsTab extends StatelessWidget {
           const SizedBox(height: 24),
           SettingsKeyField(
             label: 'GOOGLE GEMINI',
-            controller: geminiController,
+            controller: provider.geminiController,
             accentColor: Colors.blueAccent,
           ),
           const SizedBox(height: 20),
           SettingsKeyField(
             label: 'OPENAI GPT-4o',
-            controller: openaiController,
+            controller: provider.openaiController,
             accentColor: Colors.greenAccent,
           ),
           const SizedBox(height: 20),
           SettingsKeyField(
             label: 'ANTHROPIC CLAUDE',
-            controller: anthropicController,
+            controller: provider.anthropicController,
             accentColor: Colors.orangeAccent,
           ),
         ],
