@@ -32,11 +32,12 @@ class _SettingsDialogState extends State<SettingsDialog> {
   }
 
   Future<void> _save(SettingsProvider provider) async {
-    await provider.saveKeys(
-      gemini: _geminiController.text,
-      openai: _openaiController.text,
-      anthropic: _anthropicController.text,
-    );
+    // Sync the controllers in the provider session
+    provider.geminiController.text = _geminiController.text;
+    provider.openaiController.text = _openaiController.text;
+    provider.anthropicController.text = _anthropicController.text;
+    
+    await provider.saveSettingsFromSession();
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
