@@ -8,6 +8,7 @@ import '../../features/assistant/services/i_audio_interceptor_service.dart';
 import '../../features/assistant/services/audio_interceptor_service.dart';
 import '../services/hotkey_service.dart';
 import '../services/storage_service.dart';
+import '../services/permission_service.dart';
 import '../../features/settings/providers/settings_provider.dart';
 import 'i_startup_service.dart';
 
@@ -62,6 +63,8 @@ class StartUpService implements IStartUpService {
     getIt.registerLazySingleton<IAudioInterceptorService>(() => AudioInterceptorService());
 
     getIt.registerLazySingleton<HotKeyService>(() => HotKeyService());
+    
+    getIt.registerLazySingleton<PermissionService>(() => PermissionService());
   }
 
   @override
@@ -87,6 +90,8 @@ class StartUpService implements IStartUpService {
     await registerServices(environment: environment);
     await registerControllers();
 
-    // Additional initializations (e.g., local DB) would go here
+    // Trigger permission check on startup
+    final permissionService = getIt<PermissionService>();
+    await permissionService.checkAndRequestPermissions();
   }
 }
