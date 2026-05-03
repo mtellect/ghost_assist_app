@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
-import '../../assistant/models/assistant_mode.dart';
+import '../../assistant/models/assistant_skill.dart';
 
 class SettingsPage extends StatefulWidget {
   final VoidCallback onBack;
@@ -30,8 +30,8 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
 
     // Load current templates into JSON editor
     final templates = <String, String>{};
-    for (var mode in AssistantMode.values) {
-      templates[mode.name] = provider.getCustomTemplate(mode) ?? '';
+    for (var skill in AssistantSkill.values) {
+      templates[skill.name] = provider.getCustomTemplate(skill) ?? '';
     }
     _templateController.text = const JsonEncoder.withIndent('  ').convert(templates);
   }
@@ -73,29 +73,32 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFF0F0F0F),
-      child: Column(
-        children: [
-          _buildHeader(),
-          TabBar(
-            controller: _tabController,
-            indicatorColor: Colors.blueAccent,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white24,
-            tabs: const [
-              Tab(text: 'VAULT'),
-              Tab(text: 'PROMPTS'),
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        color: const Color(0xFF0F0F0F),
+        child: Column(
+          children: [
+            _buildHeader(),
+            TabBar(
               controller: _tabController,
-              children: [_buildVaultTab(), _buildPromptsTab()],
+              indicatorColor: Colors.blueAccent,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white24,
+              tabs: const [
+                Tab(text: 'VAULT'),
+                Tab(text: 'SKILL PROMPTS'),
+              ],
             ),
-          ),
-          _buildFooter(),
-        ],
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [_buildVaultTab(), _buildPromptsTab()],
+              ),
+            ),
+            _buildFooter(),
+          ],
+        ),
       ),
     );
   }
@@ -155,7 +158,7 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'JSON PROMPT TEMPLATES',
+            'JSON SKILL TEMPLATES',
             style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
@@ -172,6 +175,8 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.black,
+                hintText: '{ "skill_name": "Prompt instruction..." }',
+                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.1)),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(color: Colors.white10),

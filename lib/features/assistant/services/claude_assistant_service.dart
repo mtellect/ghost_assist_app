@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart';
 import '../models/ai_model.dart';
-import '../models/assistant_mode.dart';
+import '../models/assistant_skill.dart';
 import 'i_assistant_service.dart';
 import '../../../core/utils/logger.dart';
 
@@ -22,7 +22,7 @@ class ClaudeAssistantService implements IAssistantService {
 
   @override
   Future<String> getResponse({
-    required AssistantMode mode,
+    required AssistantSkill skill,
     required String prompt,
     File? screenCapture,
     File? audioFile,
@@ -64,5 +64,5 @@ class ClaudeAssistantService implements IAssistantService {
   }
 
   @override
-  String getSystemPrompt(AssistantMode mode) => ''; // Handled by orchestrator
+  String getSystemPrompt(AssistantSkill skill) => ''; // Handled by orchestrator
 }

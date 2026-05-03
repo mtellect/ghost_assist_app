@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
-import '../models/assistant_mode.dart';
+import '../models/assistant_skill.dart';
 import '../services/i_audio_interceptor_service.dart';
 import '../services/i_assistant_service.dart';
 import '../services/screen_capture_service.dart';
@@ -13,7 +13,7 @@ class AssistantProvider extends ChangeNotifier {
   final IAudioInterceptorService _audioService;
   final ScreenCaptureService _captureService;
 
-  AssistantMode _currentMode = AssistantMode.flutter;
+  AssistantSkill _currentSkill = AssistantSkill.flutter;
   AIModel _currentModel = AIModel.defaultModel;
   String _response = '';
   bool _isLoading = false;
@@ -29,7 +29,7 @@ class AssistantProvider extends ChangeNotifier {
        _audioService = audioService,
        _captureService = captureService;
 
-  AssistantMode get mode => _currentMode;
+  AssistantSkill get skill => _currentSkill;
   AIModel get aiModel => _currentModel;
   String get response => _response;
   bool get isLoading => _isLoading;
@@ -37,8 +37,8 @@ class AssistantProvider extends ChangeNotifier {
   bool get isStealth => _isStealth;
   File? get lastCapture => _lastCapture;
 
-  void setMode(AssistantMode mode) {
-    _currentMode = mode;
+  void setSkill(AssistantSkill skill) {
+    _currentSkill = skill;
     notifyListeners();
   }
 
@@ -66,7 +66,7 @@ class AssistantProvider extends ChangeNotifier {
     final file = await _captureService.captureRegion();
     if (file != null) {
       await ask(
-        'Analyze this screen content and provide help based on the current mode.',
+        'Analyze this screen content and provide help based on the current skill.',
         screenCapture: file,
       );
     }
@@ -94,7 +94,7 @@ class AssistantProvider extends ChangeNotifier {
       if (path != null) {
         // Automatically ask Gemini to analyze the audio
         await ask(
-          'I just spoke. Please transcribe my question and answer it based on the current mode.',
+          'I just spoke. Please transcribe my question and answer it based on the current skill.',
           audioFile: File(path),
         );
       }
@@ -104,7 +104,7 @@ class AssistantProvider extends ChangeNotifier {
           _isListening = false;
           notifyListeners();
           await ask(
-            'I just spoke. Please transcribe my question and answer it based on the current mode.',
+            'I just spoke. Please transcribe my question and answer it based on the current skill.',
             audioFile: File(path),
           );
         },
@@ -121,7 +121,7 @@ class AssistantProvider extends ChangeNotifier {
 
     try {
       _response = await _assistantService.getResponse(
-        mode: _currentMode,
+        skill: _currentSkill,
         prompt: prompt,
         screenCapture: screenCapture,
         audioFile: audioFile,

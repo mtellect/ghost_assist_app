@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dart_openai/dart_openai.dart';
 import '../models/ai_model.dart';
-import '../models/assistant_mode.dart';
+import '../models/assistant_skill.dart';
 import 'i_assistant_service.dart';
 import '../../../core/utils/logger.dart';
 
@@ -22,7 +22,7 @@ class OpenAiAssistantService implements IAssistantService {
 
   @override
   Future<String> getResponse({
-    required AssistantMode mode,
+    required AssistantSkill skill,
     required String prompt,
     File? screenCapture,
     File? audioFile,
@@ -74,5 +74,5 @@ class OpenAiAssistantService implements IAssistantService {
   }
 
   @override
-  String getSystemPrompt(AssistantMode mode) => ''; // Handled by orchestrator
+  String getSystemPrompt(AssistantSkill skill) => ''; // Handled by orchestrator
 }

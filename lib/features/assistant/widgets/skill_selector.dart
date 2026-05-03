@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/assistant_mode.dart';
+import '../models/assistant_skill.dart';
 import '../providers/assistant_provider.dart';
 
-class ModeSelector extends StatelessWidget {
-  const ModeSelector({super.key});
+class SkillSelector extends StatelessWidget {
+  const SkillSelector({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +13,12 @@ class ModeSelector extends StatelessWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 4,
-      children: AssistantMode.values.map((mode) {
-        final isSelected = provider.mode == mode;
+      children: AssistantSkill.values.map((skill) {
+        final isSelected = provider.skill == skill;
         return ChoiceChip(
-          label: Text(mode.name),
+          label: Text(skill.displayName),
           selected: isSelected,
-          onSelected: (_) => provider.setMode(mode),
+          onSelected: (_) => provider.setSkill(skill),
           selectedColor: Colors.blueAccent.withValues(alpha: 0.2),
           backgroundColor: Colors.white.withValues(alpha: 0.05),
           labelStyle: TextStyle(

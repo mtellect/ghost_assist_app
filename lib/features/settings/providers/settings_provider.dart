@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../../core/services/storage_service.dart';
-import '../../assistant/models/assistant_mode.dart';
+import '../../assistant/models/assistant_skill.dart';
 
 class SettingsProvider extends ChangeNotifier {
   final IStorageService _storage;
@@ -29,16 +29,22 @@ class SettingsProvider extends ChangeNotifier {
     
     final templatesJson = _storage.getString('CUSTOM_TEMPLATES');
     if (templatesJson != null) {
-      _customTemplates = Map<String, String>.from(jsonDecode(templatesJson));
+      try {
+        _customTemplates = Map<String, String>.from(jsonDecode(templatesJson));
+      } catch (_) {
+        _customTemplates = {};
+      }
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  String? getCustomTemplate(AssistantMode mode) {
-    return _customTemplates[mode.name];
+  String? getCustomTemplate(AssistantSkill skill) {
+    return _customTemplates[skill.name];
   }
+
+  Map<String, String> get allTemplates => Map.unmodifiable(_customTemplates);
 
   Future<void> saveTemplates(Map<String, String> templates) async {
     _customTemplates = templates;

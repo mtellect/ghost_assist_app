@@ -1,19 +1,18 @@
 import 'dart:io';
 import 'package:ghost_assist_app/features/assistant/models/ai_model.dart';
-
-import '../models/assistant_mode.dart';
+import '../models/assistant_skill.dart';
 
 abstract class IAssistantService {
   /// Sends a prompt with optional image data to the AI model.
   Future<String> getResponse({
-    required AssistantMode mode,
+    required AssistantSkill skill,
     required String prompt,
     File? screenCapture,
     File? audioFile,
   });
 
-  /// Provides context-specific instructions based on the interview mode.
-  String getSystemPrompt(AssistantMode mode);
+  /// Provides context-specific instructions based on the interview skill.
+  String getSystemPrompt(AssistantSkill skill);
 
   /// Resets the current chat session and history.
   void resetChat();

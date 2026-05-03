@@ -1,6 +1,6 @@
 import 'dart:io';
 import '../models/ai_model.dart';
-import '../models/assistant_mode.dart';
+import '../models/assistant_skill.dart';
 import 'i_assistant_service.dart';
 import 'gemini_assistant_service.dart';
 import 'openai_assistant_service.dart';
@@ -34,33 +34,33 @@ class AssistantService implements IAssistantService {
 
   @override
   Future<String> getResponse({
-    required AssistantMode mode,
+    required AssistantSkill skill,
     required String prompt,
     File? screenCapture,
     File? audioFile,
   }) async {
-    final systemPrompt = getSystemPrompt(mode);
+    final systemPrompt = getSystemPrompt(skill);
     final fullPrompt = '$systemPrompt\n\n$prompt';
 
-    GhostLogger.d('Routing request to ${_currentModel.provider.name}...', tag: 'AssistantService');
+    GhostLogger.d('Routing request to ${_currentModel.provider.name} for skill: ${skill.name}...', tag: 'AssistantService');
 
     if (_currentModel.provider == AIProvider.gemini) {
       return _geminiService.getResponse(
-        mode: mode,
+        skill: skill,
         prompt: fullPrompt,
         screenCapture: screenCapture,
         audioFile: audioFile,
       );
     } else if (_currentModel.provider == AIProvider.openai) {
       return _openaiService.getResponse(
-        mode: mode,
+        skill: skill,
         prompt: fullPrompt,
         screenCapture: screenCapture,
         audioFile: audioFile,
       );
     } else {
       return _claudeService.getResponse(
-        mode: mode,
+        skill: skill,
         prompt: fullPrompt,
         screenCapture: screenCapture,
         audioFile: audioFile,
@@ -76,11 +76,11 @@ class AssistantService implements IAssistantService {
   }
 
   @override
-  String getSystemPrompt(AssistantMode mode) {
+  String getSystemPrompt(AssistantSkill skill) {
     // Check for custom template first
     try {
       final settings = getIt<SettingsProvider>();
-      final customTemplate = settings.getCustomTemplate(mode);
+      final customTemplate = settings.getCustomTemplate(skill);
       if (customTemplate != null && customTemplate.isNotEmpty) {
         return customTemplate;
       }
@@ -88,33 +88,29 @@ class AssistantService implements IAssistantService {
       // SettingsProvider might not be registered yet during early init
     }
 
-    switch (mode) {
-      case AssistantMode.flutter:
-        return 'You are a Senior Flutter Developer and Architect. You are helping a developer during a technical interview. Provide concise, expert-level advice on state management, widgets, performance, and architecture. Focus on industry best practices.';
-      case AssistantMode.ios:
-        return 'You are a Senior iOS Engineer. Provide expert advice on Swift, SwiftUI, Combine, and memory management.';
-      case AssistantMode.android:
-        return 'You are a Senior Android Engineer. Provide expert advice on Kotlin, Jetpack Compose, Coroutines, and Dagger/Hilt.';
-      case AssistantMode.springboot:
-        return 'You are a Senior Java/Spring Boot Backend Architect. Focus on microservices, JPA/Hibernate, and scalable systems.';
-      case AssistantMode.dsa:
-        return 'You are an expert in Data Structures and Algorithms. Help solve coding challenges efficiently with optimal Time/Space complexity.';
-      case AssistantMode.systemDesign:
-        return 'You are a Senior System Architect. Provide advice on scalability, availability, and distributed systems.';
-      case AssistantMode.programming:
+    switch (skill) {
+      case AssistantSkill.flutter:
+        return 'You are a Senior Flutter Developer and Architect. Provide concise, expert-level advice on state management, performance, and architecture.';
+      case AssistantSkill.ios:
+        return 'You are a Senior iOS Engineer. Provide expert advice on Swift, SwiftUI, and memory management.';
+      case AssistantSkill.android:
+        return 'You are a Senior Android Engineer. Provide expert advice on Kotlin, Jetpack Compose, and Coroutines.';
+      case AssistantSkill.springboot:
+        return 'You are a Senior Java/Spring Boot Backend Architect. Focus on microservices and scalable systems.';
+      case AssistantSkill.dsa:
+        return 'You are an expert in Data Structures and Algorithms. Help solve coding challenges efficiently.';
+      case AssistantSkill.systemDesign:
+        return 'You are a Senior System Architect. Provide advice on scalability and distributed systems.';
+      case AssistantSkill.programming:
         return 'You are a Polyglot Senior Developer. Focus on general programming concepts and clean code.';
-      case AssistantMode.behavioral:
+      case AssistantSkill.behavioral:
         return 'You are a Career Coach specializing in the STAR method. Help the user frame their answers effectively.';
-      case AssistantMode.sales:
-        return 'You are a Sales Strategist. Provide advice on closing deals and negotiation.';
-      case AssistantMode.negotiation:
-        return 'You are a Negotiation Expert. Help the user navigate complex compensation or contract discussions.';
-      case AssistantMode.presentation:
-        return 'You are a Presentation Design Expert. Help the user craft a compelling narrative and visual flow.';
-      case AssistantMode.devOps:
+      case AssistantSkill.devOps:
         return 'You are a DevOps and Cloud Engineer. Focus on CI/CD, Kubernetes, and AWS/Azure/GCP.';
-      case AssistantMode.dataScience:
-        return 'You are a Lead Data Scientist. Provide advice on ML models, data pipelines, and statistical analysis.';
+      case AssistantSkill.dataScience:
+        return 'You are a Lead Data Scientist. Provide advice on ML models and data analysis.';
+      case AssistantSkill.custom:
+        return 'You are an expert AI assistant. Provide helpful, concise, and accurate information.';
     }
   }
 }

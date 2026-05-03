@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../models/ai_model.dart';
-import '../models/assistant_mode.dart';
+import '../models/assistant_skill.dart';
 import 'i_assistant_service.dart';
 import '../../../core/utils/logger.dart';
 
@@ -31,7 +31,7 @@ class GeminiAssistantService implements IAssistantService {
 
   @override
   Future<String> getResponse({
-    required AssistantMode mode,
+    required AssistantSkill skill,
     required String prompt,
     File? screenCapture,
     File? audioFile,
@@ -70,5 +70,5 @@ class GeminiAssistantService implements IAssistantService {
   }
 
   @override
-  String getSystemPrompt(AssistantMode mode) => ''; // Handled by orchestrator
+  String getSystemPrompt(AssistantSkill skill) => ''; // Handled by orchestrator
 }
