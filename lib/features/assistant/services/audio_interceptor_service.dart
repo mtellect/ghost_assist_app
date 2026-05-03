@@ -9,8 +9,8 @@ class AudioInterceptorService implements IAudioInterceptorService {
   bool _isListening = false;
   StreamSubscription<Amplitude>? _amplitudeSub;
   DateTime? _lastVoiceTime;
-  final double _silenceThreshold = -40.0; // dB
-  final Duration _silenceDuration = const Duration(seconds: 2);
+  final double _silenceThreshold = -25.0; // dB (Less sensitive to noise)
+  final Duration _silenceDuration = const Duration(milliseconds: 1500);
 
   @override
   bool get isListening => _isListening;
@@ -32,7 +32,7 @@ class AudioInterceptorService implements IAudioInterceptorService {
         GhostLogger.i('Audio interceptor started listening...', tag: 'AudioService');
 
         // Start amplitude monitoring for VAD
-        _amplitudeSub = _recorder.onAmplitudeChanged(const Duration(milliseconds: 200)).listen((
+        _amplitudeSub = _recorder.onAmplitudeChanged(const Duration(milliseconds: 100)).listen((
           amp,
         ) async {
           if (amp.current > _silenceThreshold) {
