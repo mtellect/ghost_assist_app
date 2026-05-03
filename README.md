@@ -17,45 +17,58 @@ Ghost Assist has transitioned to a **Skill-Based Architecture**. Choose your int
 - **Expert Domains**: Flutter, iOS, Android, Spring Boot, DSA, System Design, Behavioral, and more.
 - **Custom Prompts**: Every skill's system instructions can be fine-tuned in the Settings Hub.
 
-### 🌌 Multi-AI Provider Hub
-Switch engines on the fly without restarting. Ghost Assist supports the world's most powerful models:
-- **Google**: Gemini 1.5 Pro & Flash.
-- **Anthropic**: Claude 3.5 Sonnet.
-- **OpenAI**: GPT-4o & GPT-4o Mini.
-
-### ⌨️ Global Command Center
-Control the assistant from anywhere using global system-wide hotkeys:
-- **`Option + S`**: **Smart Capture** (Analyze a specific region of your screen).
-- **`Option + F`**: **Full Screen** (Analyze your entire workspace).
-- **`Option + L`**: **Voice Mode** (Toggle the intelligent listener).
-- **`Option + H`**: **Stealth Toggle** (Show/Hide the UI instantly).
-
----
-
-## 🛠️ Architecture & Tech Stack
-
-- **Core**: Flutter (macOS & Windows)
-- **AI Engine**: Multi-Provider (Gemini, Claude, OpenAI)
-- **State Management**: Provider with Dependency Injection (GetIt)
-- **Native Integration**: Custom C++/Swift Method Channels for platform stealth parity.
-- **Storage**: `flutter_secure_storage` for API Vault and local settings.
-- **Keyboard**: `hotkey_manager` for system-wide shortcuts.
-
 ---
 
 ## 🚀 Getting Started
 
+This project uses **[FVM](https://fvm.app/)** to ensure SDK consistency across platforms.
+
 ### 1. Requirements
 - macOS 12.0+ or Windows 10 (Version 2004)+
-- API Keys for Gemini, OpenAI, or Anthropic.
+- **Dart SDK** installed on your host machine.
 
-### 2. Installation
+### 2. Initial Setup (FVM)
+First, install FVM and pull the project's pinned Flutter SDK:
 ```bash
+# Install FVM globally
+dart pub global activate fvm
+
+# Install the pinned Flutter version (from .fvmrc)
+fvm install
+```
+
+### 3. Installation & Build
+Always prepend `fvm` to your flutter commands to use the project-specific SDK:
+
+```bash
+# Clone the repository
 git clone https://github.com/mtellect/ghost_assist_app.git
 cd ghost_assist_app
-flutter pub get
-flutter run -d macos # or windows
+
+# Install dependencies
+fvm flutter pub get
+
+# Run the app
+fvm flutter run -d macos  # or windows
 ```
+
+### 4. Build for Release
+To generate a production-ready binary:
+```bash
+# macOS
+fvm flutter build macos --release
+
+# Windows
+fvm flutter build windows --release
+```
+
+---
+
+## 🛠️ Tech Stack
+- **SDK**: Flutter (Managed by FVM)
+- **AI Engine**: Multi-Provider (Gemini, Claude, OpenAI)
+- **State Management**: Provider & GetIt
+- **Native**: Custom C++/Swift Bridge for Stealth Parity.
 
 ---
 
