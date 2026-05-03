@@ -4,26 +4,30 @@ import 'package:window_manager/window_manager.dart';
 import '../models/assistant_mode.dart';
 import '../services/i_audio_interceptor_service.dart';
 import '../services/i_assistant_service.dart';
+import '../services/screen_capture_service.dart';
 import '../models/gemini_model.dart';
 import '../../../core/native/window_stealth.dart';
 
 class AssistantProvider extends ChangeNotifier {
   final IAssistantService _assistantService;
   final IAudioInterceptorService _audioService;
+  final ScreenCaptureService _captureService;
 
   AssistantMode _currentMode = AssistantMode.flutter;
   GeminiModel _currentModel = GeminiModel.defaultModel;
   String _response = '';
   bool _isLoading = false;
   bool _isListening = false;
-  bool _isStealth = false;
+  bool _isStealth = true;
   File? _lastCapture;
 
   AssistantProvider({
     required IAssistantService assistantService,
     required IAudioInterceptorService audioService,
-  }) : _assistantService = assistantService,
-       _audioService = audioService;
+    required ScreenCaptureService captureService,
+  })  : _assistantService = assistantService,
+        _audioService = audioService,
+        _captureService = captureService;
 
   AssistantMode get mode => _currentMode;
   GeminiModel get geminiModel => _currentModel;
@@ -40,12 +44,34 @@ class AssistantProvider extends ChangeNotifier {
 
   Future<void> toggleStealth() async {
     _isStealth = !_isStealth;
+    // Native stealth makes the window invisible to screen sharing/recording
     await WindowStealth.setStealthMode(_isStealth);
-    // Use a near-transparent color when visible to help with window rendering
-    await windowManager.setBackgroundColor(
-      _isStealth ? Colors.transparent : Colors.black.withValues(alpha: 0.01),
-    );
+    
+    // We keep the window slightly visible to the user so they can read responses
+    // but we can toggle the 'Always on Top' or transparency if needed.
+    await windowManager.setBackgroundColor(Colors.transparent);
+    
     notifyListeners();
+  }
+
+  Future<void> captureRegion() async {
+    final file = await _captureService.captureRegion();
+    if (file != null) {
+      await ask(
+        'Analyze this screen content and provide help based on the current mode.',
+        screenCapture: file,
+      );
+    }
+  }
+
+  Future<void> captureFullScreen() async {
+    final file = await _captureService.captureScreen();
+    if (file != null) {
+      await ask(
+        'Analyze the full screen.',
+        screenCapture: file,
+      );
+    }
   }
 
   void setModel(GeminiModel model) {

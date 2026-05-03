@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/assistant_provider.dart';
-import '../services/screen_capture_service.dart';
 import 'mode_selector.dart';
 import 'assistant_action_button.dart';
 import 'status_bar.dart';
 
 class AssistantFooter extends StatelessWidget {
-  final ScreenCaptureService _captureService = ScreenCaptureService();
-
-  AssistantFooter({super.key});
+  const AssistantFooter({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<AssistantProvider>();
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -34,15 +33,7 @@ class AssistantFooter extends StatelessWidget {
                 child: AssistantActionButton(
                   icon: Icons.crop_free,
                   label: 'Smart Capture',
-                  onTap: () async {
-                    final file = await _captureService.captureRegion();
-                    if (file != null && context.mounted) {
-                      context.read<AssistantProvider>().ask(
-                        'Analyze this screen content and provide help based on the current mode.',
-                        screenCapture: file,
-                      );
-                    }
-                  },
+                  onTap: provider.captureRegion,
                 ),
               ),
               const SizedBox(width: 12),
@@ -50,15 +41,7 @@ class AssistantFooter extends StatelessWidget {
                 child: AssistantActionButton(
                   icon: Icons.fullscreen,
                   label: 'Full Screen',
-                  onTap: () async {
-                    final file = await _captureService.captureScreen();
-                    if (file != null && context.mounted) {
-                      context.read<AssistantProvider>().ask(
-                        'Analyze the full screen.',
-                        screenCapture: file,
-                      );
-                    }
-                  },
+                  onTap: provider.captureFullScreen,
                 ),
               ),
             ],

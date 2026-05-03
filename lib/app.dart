@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'core/enums/api_environment_enum.dart';
@@ -7,6 +8,8 @@ import 'core/startup/startup_service.dart';
 import 'core/utils/logger.dart';
 import 'features/assistant/providers/assistant_provider.dart';
 import 'features/assistant/floating_assistant_panel.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
+import 'core/services/hotkey_service.dart';
 
 Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +44,44 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
   });
 
   // Enable Stealth Mode by default
-  await WindowStealth.setStealthMode(false);
+  await WindowStealth.setStealthMode(true);
+
+  // Initialize HotKeys
+  final assistantProvider = getIt<AssistantProvider>();
+  final hotKeyService = getIt<HotKeyService>();
+  await hotKeyService.init();
+
+  // Option + S: Smart Capture
+  await hotKeyService.registerHotKey(
+    keyCode: PhysicalKeyboardKey.keyS,
+    modifiers: [HotKeyModifier.alt],
+    identifier: 'smart_capture',
+    onPressed: () => assistantProvider.captureRegion(),
+  );
+
+  // Option + F: Full Screen
+  await hotKeyService.registerHotKey(
+    keyCode: PhysicalKeyboardKey.keyF,
+    modifiers: [HotKeyModifier.alt],
+    identifier: 'full_screen',
+    onPressed: () => assistantProvider.captureFullScreen(),
+  );
+
+  // Option + L: Toggle Listening
+  await hotKeyService.registerHotKey(
+    keyCode: PhysicalKeyboardKey.keyL,
+    modifiers: [HotKeyModifier.alt],
+    identifier: 'toggle_listening',
+    onPressed: () => assistantProvider.toggleListening(),
+  );
+
+  // Option + H: Toggle Stealth
+  await hotKeyService.registerHotKey(
+    keyCode: PhysicalKeyboardKey.keyH,
+    modifiers: [HotKeyModifier.alt],
+    identifier: 'toggle_stealth',
+    onPressed: () => assistantProvider.toggleStealth(),
+  );
 
   GhostLogger.i('Starting runApp...', tag: 'App');
   runApp(

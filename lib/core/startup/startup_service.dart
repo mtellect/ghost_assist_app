@@ -6,6 +6,7 @@ import '../../features/assistant/providers/assistant_provider.dart';
 import '../../features/assistant/services/screen_capture_service.dart';
 import '../../features/assistant/services/i_audio_interceptor_service.dart';
 import '../../features/assistant/services/audio_interceptor_service.dart';
+import '../services/hotkey_service.dart';
 import 'i_startup_service.dart';
 
 import '../enums/api_environment_enum.dart';
@@ -21,28 +22,24 @@ class StartUpService implements IStartUpService {
   @override
   Future<void> registerServices({required ApiEnvironmentEnum environment}) async {
     final String geminiApiKey = const String.fromEnvironment('GEMINI_API_KEY');
-    
+
     getIt.registerLazySingleton<EnvConfigurationsModel>(
       () => EnvConfigurationsModel(
         environment: environment,
         baseUrl: ApiUrls.getBaseUrl(environment),
       ),
     );
-    
+
     // Set base URL in ApiClient
     getIt<ApiClient>().updateBaseUrl(ApiUrls.getBaseUrl(environment));
 
-    getIt.registerLazySingleton<IAssistantService>(
-      () => AssistantService(apiKey: geminiApiKey),
-    );
+    getIt.registerLazySingleton<IAssistantService>(() => AssistantService(apiKey: geminiApiKey));
 
-    getIt.registerLazySingleton<ScreenCaptureService>(
-      () => ScreenCaptureService(),
-    );
+    getIt.registerLazySingleton<ScreenCaptureService>(() => ScreenCaptureService());
 
-    getIt.registerLazySingleton<IAudioInterceptorService>(
-      () => AudioInterceptorService(),
-    );
+    getIt.registerLazySingleton<IAudioInterceptorService>(() => AudioInterceptorService());
+
+    getIt.registerLazySingleton<HotKeyService>(() => HotKeyService());
   }
 
   @override
@@ -51,6 +48,7 @@ class StartUpService implements IStartUpService {
       () => AssistantProvider(
         assistantService: getIt<IAssistantService>(),
         audioService: getIt<IAudioInterceptorService>(),
+        captureService: getIt<ScreenCaptureService>(),
       ),
     );
   }
@@ -60,7 +58,7 @@ class StartUpService implements IStartUpService {
     await registerNetwork();
     await registerServices(environment: environment);
     await registerControllers();
-    
+
     // Additional initializations (e.g., local DB) would go here
   }
 }
