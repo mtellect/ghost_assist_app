@@ -17,7 +17,7 @@ class FloatingAssistantPanel extends StatefulWidget {
 
 class _FloatingAssistantPanelState extends State<FloatingAssistantPanel> {
   final ScreenCaptureService _captureService = ScreenCaptureService();
-  bool _isStealth = true;
+  bool _isStealth = false; // Match initial state in app.dart
 
   void _toggleStealth() async {
     final newState = !_isStealth;

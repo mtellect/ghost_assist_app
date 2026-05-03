@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../models/assistant_mode.dart';
 import 'i_assistant_service.dart';
@@ -13,15 +14,17 @@ class AssistantService implements IAssistantService {
   final List<Content> _history = [];
 
   AssistantService({required this.apiKey}) {
+    debugPrint('[AssistantService] Initializing models (Key length: ${apiKey.length})...');
     _proModel = GenerativeModel(
-      model: 'gemini-1.5-pro',
+      model: 'gemini-pro-latest',
       apiKey: apiKey,
     );
     _flashModel = GenerativeModel(
-      model: 'gemini-1.5-flash',
+      model: 'gemini-flash-latest',
       apiKey: apiKey,
     );
     _chatSession = _proModel.startChat();
+    debugPrint('[AssistantService] Models initialized successfully.');
   }
 
   @override
@@ -43,6 +46,7 @@ class AssistantService implements IAssistantService {
     
     try {
       final activeModel = _usePro ? _proModel : _flashModel;
+      debugPrint('[AssistantService] Getting response using ${_usePro ? "Gemini 1.5 Pro" : "Gemini 1.5 Flash"}');
 
       if (screenCapture != null) {
         final imageBytes = await screenCapture.readAsBytes();
@@ -66,6 +70,7 @@ class AssistantService implements IAssistantService {
         return response.text ?? 'No response from AI.';
       }
     } catch (e) {
+      debugPrint('[AssistantService] ERROR: $e');
       return 'Error generating response: $e';
     }
   }

@@ -9,40 +9,41 @@ import 'features/assistant/widgets/floating_assistant_panel.dart';
 
 Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Startup Service
   final startupService = StartUpService();
   await startupService.initializeApp(environment: environment);
 
   // Initialize Window Manager
   await windowManager.ensureInitialized();
+
+  print('[App] Initializing window...');
+  final bool isDebug = environment.key == EnvironmentKeys.staging;
   
-  WindowOptions windowOptions = const WindowOptions(
-    size: Size(400, 600),
+  WindowOptions windowOptions = WindowOptions(
+    size: const Size(400, 600),
     center: true,
-    backgroundColor: Colors.transparent,
+    backgroundColor: isDebug ? const Color(0xFF1A1A1A) : Colors.transparent,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.hidden,
     alwaysOnTop: true,
   );
-  
+
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();
     await windowManager.setAsFrameless();
     await windowManager.setHasShadow(true);
+    print('[App] Window ready and shown.');
   });
 
   // Enable Stealth Mode by default
-  await WindowStealth.setStealthMode(true);
+  await WindowStealth.setStealthMode(false);
 
+  print('[App] Starting runApp...');
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(
-          value: getIt<AssistantProvider>(),
-        ),
-      ],
+      providers: [ChangeNotifierProvider.value(value: getIt<AssistantProvider>())],
       child: const GhostAssistApp(),
     ),
   );
