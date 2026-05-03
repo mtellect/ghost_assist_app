@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:ghost_assist_app/core/utils/logger.dart';
 import 'package:window_manager/window_manager.dart';
 import '../models/assistant_skill.dart';
 import '../services/i_audio_interceptor_service.dart';
@@ -92,21 +93,36 @@ class AssistantProvider extends ChangeNotifier {
       notifyListeners();
 
       if (path != null) {
-        // Automatically ask Gemini to analyze the audio
-        await ask(
-          'I just spoke. Please transcribe my question and answer it based on the current skill.',
-          audioFile: File(path),
-        );
+        final file = File(path);
+        final size = await file.length();
+        
+        // Skip if the file is too small (e.g., < 2KB is likely empty/silence)
+        if (size > 2048) {
+          await ask(
+            'I just spoke. Please transcribe my question and answer it based on the current skill.',
+            audioFile: file,
+          );
+        } else {
+          GhostLogger.i('Audio recording too short or empty, skipping processing.', tag: 'AssistantProvider');
+        }
       }
     } else {
       await _audioService.startListening(
         onAutoStop: (path) async {
           _isListening = false;
           notifyListeners();
-          await ask(
-            'I just spoke. Please transcribe my question and answer it based on the current skill.',
-            audioFile: File(path),
-          );
+          
+          final file = File(path);
+          final size = await file.length();
+          
+          if (size > 2048) {
+            await ask(
+              'I just spoke. Please transcribe my question and answer it based on the current skill.',
+              audioFile: file,
+            );
+          } else {
+            GhostLogger.i('Audio auto-stop: recording too short or empty, skipping.', tag: 'AssistantProvider');
+          }
         },
       );
       _isListening = _audioService.isListening;
