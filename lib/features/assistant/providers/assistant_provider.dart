@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 import '../models/assistant_mode.dart';
 import '../services/i_audio_interceptor_service.dart';
 import '../services/i_assistant_service.dart';
@@ -40,6 +41,10 @@ class AssistantProvider extends ChangeNotifier {
   Future<void> toggleStealth() async {
     _isStealth = !_isStealth;
     await WindowStealth.setStealthMode(_isStealth);
+    // Use a near-transparent color when visible to help with window rendering
+    await windowManager.setBackgroundColor(
+      _isStealth ? Colors.transparent : Colors.black.withValues(alpha: 0.01),
+    );
     notifyListeners();
   }
 
