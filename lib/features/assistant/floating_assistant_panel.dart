@@ -17,17 +17,33 @@ class FloatingAssistantPanel extends StatelessWidget {
           type: MaterialType.transparency,
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A).withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
-                width: 1,
+                color: Colors.white.withValues(alpha: 0.12),
+                width: 1.5,
+              ),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF1E1E2E).withValues(alpha: 0.9),
+                  const Color(0xFF121212).withValues(alpha: 0.85),
+                ],
+                stops: const [0.0, 1.0],
               ),
               boxShadow: [
+                // Deep ambient shadow
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  blurRadius: 30,
-                  spreadRadius: 10,
+                  color: Colors.black.withValues(alpha: 0.6),
+                  blurRadius: 40,
+                  spreadRadius: 5,
+                  offset: const Offset(0, 10),
+                ),
+                // Subtle outer glow
+                BoxShadow(
+                  color: Colors.blueAccent.withValues(alpha: 0.05),
+                  blurRadius: 20,
+                  spreadRadius: 2,
                 ),
               ],
             ),
