@@ -5,14 +5,14 @@ class ApiUrls {
   static const String stagingBaseUrl = 'https://api-staging.ghostassist.ai/v1';
   static const String prodBaseUrl = 'https://api.ghostassist.ai/v1';
 
-  static String getBaseUrl(Environment env) {
-    switch (env) {
-      case Environment.dev:
-        return devBaseUrl;
-      case Environment.staging:
+  static String getBaseUrl(ApiEnvironmentEnum env) {
+    switch (env.key) {
+      case EnvironmentKeys.staging:
         return stagingBaseUrl;
-      case Environment.prod:
+      case EnvironmentKeys.prod:
         return prodBaseUrl;
+      default:
+        return devBaseUrl;
     }
   }
 

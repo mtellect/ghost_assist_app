@@ -43,6 +43,8 @@
 
 ## 📐 Architecture Guidelines
 - **State Management**: Provider (ChangeNotifier).
+- **Dependency Injection**: GetIt with `StartUpService` in `lib/core/startup/`.
+- **Environment Management**: `ApiEnvironmentEnum` and `AppFlavor` in `lib/core/enums/`.
 - **Network**: Dio with `Library/Part` pattern in `lib/api/`.
 - **Feature Structure**: 
   - `lib/features/[feature_name]/services/` (Interface + Implementation)

@@ -1,9 +1,7 @@
 part of base_api;
 
-enum Environment { dev, staging, prod }
-
 class EnvConfigurationsModel {
-  final Environment environment;
+  final ApiEnvironmentEnum environment;
   final String baseUrl;
 
   EnvConfigurationsModel({

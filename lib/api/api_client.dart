@@ -6,15 +6,20 @@ class ApiClient {
 
   factory ApiClient() => _instance;
 
+  static ApiClient init({VoidCallback? onLogout}) {
+    // handle onLogout if needed in interceptors
+    return _instance;
+  }
+
   ApiClient._internal() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: ApiUrls.getBaseUrl(Environment.dev), // Default to dev
         connectTimeout: const Duration(seconds: 60),
         receiveTimeout: const Duration(seconds: 60),
         sendTimeout: const Duration(seconds: 60),
       ),
     );
+    // ...
 
     _dio.interceptors.addAll([
       ConnectivityInterceptor(),
