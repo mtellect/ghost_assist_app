@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../models/assistant_mode.dart';
 import 'i_assistant_service.dart';
+import '../../../core/utils/logger.dart';
 
 class AssistantService implements IAssistantService {
   final String apiKey;
@@ -14,7 +15,7 @@ class AssistantService implements IAssistantService {
   final List<Content> _history = [];
 
   AssistantService({required this.apiKey}) {
-    debugPrint('[AssistantService] Initializing models (Key length: ${apiKey.length})...');
+    GhostLogger.i('Initializing models (Key length: ${apiKey.length})...', tag: 'AssistantService');
     _proModel = GenerativeModel(
       model: 'gemini-pro-latest',
       apiKey: apiKey,
@@ -24,7 +25,7 @@ class AssistantService implements IAssistantService {
       apiKey: apiKey,
     );
     _chatSession = _proModel.startChat();
-    debugPrint('[AssistantService] Models initialized successfully.');
+    GhostLogger.i('Models initialized successfully.', tag: 'AssistantService');
   }
 
   @override
@@ -46,7 +47,7 @@ class AssistantService implements IAssistantService {
     
     try {
       final activeModel = _usePro ? _proModel : _flashModel;
-      debugPrint('[AssistantService] Getting response using ${_usePro ? "Gemini 1.5 Pro" : "Gemini 1.5 Flash"}');
+      GhostLogger.d('Getting response using ${_usePro ? "Gemini Pro" : "Gemini Flash"}', tag: 'AssistantService');
 
       if (screenCapture != null) {
         final imageBytes = await screenCapture.readAsBytes();
@@ -69,8 +70,8 @@ class AssistantService implements IAssistantService {
         );
         return response.text ?? 'No response from AI.';
       }
-    } catch (e) {
-      debugPrint('[AssistantService] ERROR: $e');
+    } catch (e, stack) {
+      GhostLogger.e('Error generating response', tag: 'AssistantService', error: e, stackTrace: stack);
       return 'Error generating response: $e';
     }
   }

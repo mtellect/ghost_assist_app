@@ -4,6 +4,7 @@ import 'package:window_manager/window_manager.dart';
 import 'core/enums/api_environment_enum.dart';
 import 'core/native/window_stealth.dart';
 import 'core/startup/startup_service.dart';
+import 'core/utils/logger.dart';
 import 'features/assistant/providers/assistant_provider.dart';
 import 'features/assistant/widgets/floating_assistant_panel.dart';
 
@@ -17,7 +18,7 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
   // Initialize Window Manager
   await windowManager.ensureInitialized();
 
-  print('[App] Initializing window...');
+  GhostLogger.i('Initializing window...', tag: 'App');
   final bool isDebug = environment.key == EnvironmentKeys.staging;
   
   WindowOptions windowOptions = WindowOptions(
@@ -34,13 +35,13 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
     await windowManager.focus();
     await windowManager.setAsFrameless();
     await windowManager.setHasShadow(true);
-    print('[App] Window ready and shown.');
+    GhostLogger.i('Window ready and shown.', tag: 'App');
   });
 
   // Enable Stealth Mode by default
   await WindowStealth.setStealthMode(false);
 
-  print('[App] Starting runApp...');
+  GhostLogger.i('Starting runApp...', tag: 'App');
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider.value(value: getIt<AssistantProvider>())],
