@@ -27,6 +27,17 @@ bool FlutterWindow::OnCreate() {
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
+  HWND hwnd = GetNativeWindow();
+  if (hwnd != NULL) {
+    // 1. Always on Top (Equivalent to macOS .floating)
+    // Ensures the assistant is visible over full-screen apps and other windows.
+    SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+
+    // 2. Default to Stealth Mode (Equivalent to macOS default sharingType = .none)
+    // This ensures the window starts hidden from screen capture.
+    SetWindowDisplayAffinity(hwnd, 0x00000011); 
+  }
+
   // Setup Stealth Mode Channel
   stealth_channel_ = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
       flutter_controller_->engine()->messenger(), "com.ghost.assist/stealth",
