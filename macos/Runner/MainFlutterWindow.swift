@@ -12,6 +12,10 @@ class MainFlutterWindow: NSWindow {
     
     setupStealthChannel(controller: flutterViewController)
 
+    // Ensure the window stays on top of full-screen apps and follows across spaces
+    self.level = .floating
+    self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+
     super.awakeFromNib()
   }
   
