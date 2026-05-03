@@ -7,7 +7,8 @@ import 'core/native/window_stealth.dart';
 import 'core/startup/startup_service.dart';
 import 'core/utils/logger.dart';
 import 'features/assistant/providers/assistant_provider.dart';
-import 'features/assistant/floating_assistant_panel.dart';
+import 'features/settings/providers/settings_provider.dart';
+import 'features/assistant/index_page.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'core/services/hotkey_service.dart';
 
@@ -88,7 +89,10 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
   GhostLogger.i('Starting runApp...', tag: 'App');
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider.value(value: getIt<AssistantProvider>())],
+      providers: [
+        ChangeNotifierProvider.value(value: getIt<AssistantProvider>()),
+        ChangeNotifierProvider.value(value: getIt<SettingsProvider>()),
+      ],
       child: const GhostAssistApp(),
     ),
   );
@@ -108,7 +112,7 @@ class GhostAssistApp extends StatelessWidget {
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.transparent,
       ),
-      home: const FloatingAssistantPanel(),
+      home: const IndexPage(),
     );
   }
 }

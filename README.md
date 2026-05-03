@@ -1,71 +1,80 @@
 # 👻 Ghost Assist
 
-**Ghost Assist** is a production-grade, stealth-first AI companion designed for interview support and real-time coding assistance on macOS. Built with Flutter and powered by Google Gemini 1.5, it provides a high-fidelity "Cyber-HUD" overlay that is invisible to others but crystal clear to you.
+**Ghost Assist** is a production-grade, stealth-first AI companion designed for interview support and real-time coding assistance on **macOS and Windows**. Built with Flutter and powered by a multi-AI engine (Gemini, Claude, GPT-4o), it provides a high-fidelity "Cyber-HUD" overlay that is invisible to others but crystal clear to you.
 
 ---
 
 ## 💎 Premium Features
 
-### 🕵️‍♂️ True Stealth Mode
-The assistant utilizes native macOS window levels and `NSWindowSharingType.none` to ensure the application window is **completely invisible** to screen-sharing software (Zoom, Slack, Google Meet) and screen recorders, even while it remains 100% visible and interactive on your physical monitor.
+### 🕵️‍♂️ True Stealth Mode (macOS & Windows)
+The assistant utilizes native platform APIs to ensure the application window is **completely invisible** to screen-sharing software (Zoom, Slack, Google Meet, Teams) and screen recorders:
+- **macOS**: Native `sharingType = .none` hardening.
+- **Windows**: `SetWindowDisplayAffinity` (WDA_EXCLUDEFROMCAPTURE) integration.
+Even when hidden from others, it remains 100% visible and interactive on your physical monitor.
 
-### 🎤 Intelligent VAD Listener
-Equipped with **Voice Activity Detection (VAD)**, Ghost Assist listens for your questions and automatically triggers an AI response after 1.5 seconds of silence. It includes hardware-accelerated noise suppression, echo cancellation, and auto-gain control for crystal-clear transcription.
-
-### ⌨️ Global Command Center
-Control the assistant from anywhere in macOS using global system-wide hotkeys:
-- **`Option + S`**: **Smart Capture** (Analyze a specific region of your screen).
-- **`Option + F`**: **Full Screen** (Analyze your entire workspace).
-- **`Option + L`**: **Voice Mode** (Toggle the intelligent listener).
-- **`Option + H`**: **Stealth Toggle** (Show/Hide the UI instantly).
-
-### 🌌 Cyber-HUD UI
-A modular, glassmorphism-inspired interface featuring:
-- **Mesh Gradients**: Deep space aesthetics with subtle blue-accent glows.
-- **Always-on-Top Overlay**: Stays floating even over native full-screen apps and across all macOS Spaces.
-- **Dual Engine Support**: Switch instantly between **Gemini 1.5 Flash** (speed) and **Gemini 1.5 Pro** (depth).
-
----
-
-## 🛠️ Architecture & Tech Stack
-
-- **Core**: Flutter (macOS)
-- **AI**: Google Generative AI (Gemini 1.5 Flash/Pro)
-- **State Management**: Provider with Dependency Injection (GetIt)
-- **Native Integration**: `window_manager` & Custom Method Channels for `NSWindow` hardening.
-- **Audio**: `record` package with VAD logic.
-- **Keyboard**: `hotkey_manager` for system-wide shortcuts.
+### 🧠 Skill-Based Coaching
+Ghost Assist has transitioned to a **Skill-Based Architecture**. Choose your interview domain, and the assistant instantly adapts its personality and depth:
+- **Expert Domains**: Flutter, iOS, Android, Spring Boot, DSA, System Design, Behavioral, and more.
+- **Custom Prompts**: Every skill's system instructions can be fine-tuned in the Settings Hub.
 
 ---
 
 ## 🚀 Getting Started
 
-### 1. Requirements
-- macOS 12.0 or higher.
-- A Google Gemini API Key.
+This project uses **[FVM](https://fvm.app/)** to ensure SDK consistency across platforms.
 
-### 2. Environment Setup
-Add your Gemini API Key as a Dart define during build:
+### 1. Requirements
+- macOS 12.0+ or Windows 10 (Version 2004)+
+- **Dart SDK** installed on your host machine.
+
+### 2. Initial Setup (FVM)
+First, install FVM and pull the project's pinned Flutter SDK:
 ```bash
-flutter run -d macos --dart-define=GEMINI_API_KEY=YOUR_API_KEY_HERE
+# Install FVM globally
+dart pub global activate fvm
+
+# Install the pinned Flutter version (from .fvmrc)
+fvm install
 ```
 
-### 3. Installation
+### 3. Installation & Build
+Always prepend `fvm` to your flutter commands to use the project-specific SDK:
+
 ```bash
+# Clone the repository
 git clone https://github.com/mtellect/ghost_assist_app.git
 cd ghost_assist_app
-flutter pub get
-flutter run -d macos
+
+# Install dependencies
+fvm flutter pub get
+
+# Run the app
+fvm flutter run -d macos  # or windows
 ```
+
+### 4. Build for Release
+To generate a production-ready binary:
+```bash
+# macOS
+fvm flutter build macos --release
+
+# Windows
+fvm flutter build windows --release
+```
+
+---
+
+## 🛠️ Tech Stack
+- **SDK**: Flutter (Managed by FVM)
+- **AI Engine**: Multi-Provider (Gemini, Claude, OpenAI)
+- **State Management**: Provider & GetIt
+- **Native**: Custom C++/Swift Bridge for Stealth Parity.
 
 ---
 
 ## 🔒 Security & Privacy
-Ghost Assist is designed with a "Local First" philosophy. It does not store your audio recordings or screen captures permanently. Captures are handled as temporary files and sent directly to the Gemini API for analysis.
-
----
-
-## 🤝 Contribution
-Contributions are welcome! Please feel free to submit a Pull Request or open an issue for feature requests.
+Ghost Assist is designed with a **"Local First"** philosophy.
+- **Vault**: API keys are stored in the platform's secure enclave (Keychain/Data Protection API).
+- **Ephemeral Context**: Screen captures and audio recordings are handled as temporary files and never stored permanently.
 
 *Built with precision for the modern developer.* 👻💻

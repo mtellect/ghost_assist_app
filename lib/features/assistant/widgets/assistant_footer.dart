@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/assistant_provider.dart';
-import 'mode_selector.dart';
+import 'skill_selector.dart';
 import 'assistant_action_button.dart';
 import 'status_bar.dart';
 
@@ -24,8 +24,19 @@ class AssistantFooter extends StatelessWidget {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const ModeSelector(),
+          const Text(
+            'SELECT INTERVIEW SKILL',
+            style: TextStyle(
+              color: Colors.white24,
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const SkillSelector(),
           const SizedBox(height: 16),
           Row(
             children: [

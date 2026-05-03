@@ -7,6 +7,9 @@ import '../../features/assistant/services/screen_capture_service.dart';
 import '../../features/assistant/services/i_audio_interceptor_service.dart';
 import '../../features/assistant/services/audio_interceptor_service.dart';
 import '../services/hotkey_service.dart';
+import '../services/storage_service.dart';
+import '../services/permission_service.dart';
+import '../../features/settings/providers/settings_provider.dart';
 import 'i_startup_service.dart';
 
 import '../enums/api_environment_enum.dart';
@@ -21,29 +24,38 @@ class StartUpService implements IStartUpService {
 
   @override
   Future<void> registerServices({required ApiEnvironmentEnum environment}) async {
-    final String geminiApiKey = const String.fromEnvironment('GEMINI_API_KEY');
+    // 1. Storage
+    getIt.registerSingleton<IStorageService>(StorageService());
 
-    getIt.registerLazySingleton<EnvConfigurationsModel>(
-      () => EnvConfigurationsModel(
-        environment: environment,
-        baseUrl: ApiUrls.getBaseUrl(environment),
-      ),
-    );
+    // 2. Configuration
+    getIt.registerLazySingleton<EnvConfigurationsModel>(() => EnvConfigurationsModel.instance);
 
-    // Set base URL in ApiClient
-    getIt<ApiClient>().updateBaseUrl(ApiUrls.getBaseUrl(environment));
-
-    getIt.registerLazySingleton<IAssistantService>(() => AssistantService(apiKey: geminiApiKey));
-
+    // 3. Platform Services
     getIt.registerLazySingleton<ScreenCaptureService>(() => ScreenCaptureService());
-
     getIt.registerLazySingleton<IAudioInterceptorService>(() => AudioInterceptorService());
-
     getIt.registerLazySingleton<HotKeyService>(() => HotKeyService());
+    getIt.registerLazySingleton<PermissionService>(() => PermissionService());
+
+    // 4. AI Orchestrator (Registered as a lazy singleton, keys will be fetched during init)
+    getIt.registerLazySingleton<IAssistantService>(() {
+      final config = getIt<EnvConfigurationsModel>();
+
+      // Note: These keys will be pulled from storage when the service is first accessed
+      // In a real production app, we might update these dynamically
+      return AssistantService(
+        geminiApiKey: config.geminiApiKey,
+        openaiApiKey: config.openaiApiKey,
+        anthropicApiKey: config.anthropicApiKey,
+      );
+    });
   }
 
   @override
   Future<void> registerControllers() async {
+    // 1. Settings Provider
+    getIt.registerLazySingleton<SettingsProvider>(() => SettingsProvider(getIt<IStorageService>()));
+
+    // 2. Assistant Provider
     getIt.registerLazySingleton<AssistantProvider>(
       () => AssistantProvider(
         assistantService: getIt<IAssistantService>(),
@@ -55,10 +67,23 @@ class StartUpService implements IStartUpService {
 
   @override
   Future<void> initializeApp({required ApiEnvironmentEnum environment}) async {
+    // Phase 1: Registration
     await registerNetwork();
     await registerServices(environment: environment);
     await registerControllers();
 
-    // Additional initializations (e.g., local DB) would go here
+    // Phase 2: Sequential Initialization
+
+    // 1. Storage first (dependency for almost everything)
+    await getIt<IStorageService>().init();
+
+    // 2. Settings (loads API keys and templates from storage)
+    await getIt<SettingsProvider>().loadSettings();
+
+    // 3. Permissions (Hardware access)
+    await getIt<PermissionService>().checkAndRequestPermissions();
+
+    // 4. Hotkeys (System events)
+    await getIt<HotKeyService>().init();
   }
 }
