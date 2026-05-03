@@ -31,7 +31,7 @@ class ResponseView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.auto_awesome, size: 48, color: Colors.white.withOpacity(0.1)),
+            Icon(Icons.auto_awesome, size: 48, color: Colors.white.withValues(alpha: 0.1)),
             const SizedBox(height: 16),
             const Text(
               'Ready to assist you.',
@@ -54,14 +54,14 @@ class ResponseView extends StatelessWidget {
         h1: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
         h2: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
         code: TextStyle(
-          backgroundColor: Colors.white.withOpacity(0.05),
+          backgroundColor: Colors.white.withValues(alpha: 0.05),
           color: Colors.greenAccent,
           fontFamily: 'monospace',
         ),
         codeblockDecoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.3),
+          color: Colors.black.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
       ),
     );

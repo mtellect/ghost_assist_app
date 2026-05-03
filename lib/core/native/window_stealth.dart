@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class WindowStealth {
@@ -7,8 +8,9 @@ class WindowStealth {
   static Future<void> setStealthMode(bool enabled) async {
     try {
       await _channel.invokeMethod('setStealthMode', {'enabled': enabled});
+      debugPrint('Stealth mode set to: $enabled');
     } on PlatformException catch (e) {
-      print('Failed to set stealth mode: ${e.message}');
+      debugPrint('Failed to set stealth mode: ${e.message}');
     }
   }
 
@@ -18,7 +20,7 @@ class WindowStealth {
       final bool? isEnabled = await _channel.invokeMethod('isStealthEnabled');
       return isEnabled ?? false;
     } on PlatformException catch (e) {
-      print('Failed to check stealth mode: ${e.message}');
+      debugPrint('Failed to check stealth mode: ${e.message}');
       return false;
     }
   }

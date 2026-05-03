@@ -1,4 +1,4 @@
-part of base_api;
+part of 'base_api.dart';
 
 typedef UploadProgressCallback = void Function(String fileName, double progress);
 

@@ -21,8 +21,8 @@ class ModeSelector extends StatelessWidget {
               label: Text(mode.name),
               selected: isSelected,
               onSelected: (_) => provider.setMode(mode),
-              selectedColor: Colors.blueAccent.withOpacity(0.2),
-              backgroundColor: Colors.white.withOpacity(0.05),
+              selectedColor: Colors.blueAccent.withValues(alpha: 0.2),
+              backgroundColor: Colors.white.withValues(alpha: 0.05),
               labelStyle: TextStyle(
                 color: isSelected ? Colors.blueAccent : Colors.white60,
                 fontSize: 12,

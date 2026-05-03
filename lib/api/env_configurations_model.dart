@@ -1,4 +1,4 @@
-part of base_api;
+part of 'base_api.dart';
 
 class EnvConfigurationsModel {
   final ApiEnvironmentEnum environment;

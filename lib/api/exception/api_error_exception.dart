@@ -1,4 +1,4 @@
-part of base_api;
+part of '../base_api.dart';
 
 class ApiErrorException implements Exception {
   final String? message;

@@ -1,4 +1,4 @@
-part of base_api;
+part of 'base_api.dart';
 
 class ApiUrls {
   static const String devBaseUrl = 'https://api-dev.ghostassist.ai/v1';
