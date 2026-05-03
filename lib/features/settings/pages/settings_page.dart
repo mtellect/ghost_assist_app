@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
 import '../../assistant/models/assistant_skill.dart';
+import '../widgets/settings_header.dart';
+import '../widgets/settings_footer.dart';
+import '../widgets/vault_settings_tab.dart';
+import '../widgets/prompt_settings_tab.dart';
 
 class SettingsPage extends StatefulWidget {
   final VoidCallback onBack;
@@ -72,6 +76,16 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    _geminiController.dispose();
+    _openaiController.dispose();
+    _anthropicController.dispose();
+    _templateController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -79,7 +93,7 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
         color: const Color(0xFF0F0F0F),
         child: Column(
           children: [
-            _buildHeader(),
+            SettingsHeader(onBack: widget.onBack),
             TabBar(
               controller: _tabController,
               indicatorColor: Colors.blueAccent,
@@ -93,150 +107,20 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: [_buildVaultTab(), _buildPromptsTab()],
+                children: [
+                  VaultSettingsTab(
+                    geminiController: _geminiController,
+                    openaiController: _openaiController,
+                    anthropicController: _anthropicController,
+                  ),
+                  PromptSettingsTab(templateController: _templateController),
+                ],
               ),
             ),
-            _buildFooter(),
+            SettingsFooter(onSave: _saveAll),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white10)),
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white70),
-            onPressed: widget.onBack,
-          ),
-          const SizedBox(width: 8),
-          const Text(
-            'SYSTEM CONFIGURATION',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVaultTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'API CREDENTIALS',
-            style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 24),
-          _buildKeyField('GOOGLE GEMINI', _geminiController, Colors.blueAccent),
-          const SizedBox(height: 20),
-          _buildKeyField('OPENAI GPT-4o', _openaiController, Colors.greenAccent),
-          const SizedBox(height: 20),
-          _buildKeyField('ANTHROPIC CLAUDE', _anthropicController, Colors.orangeAccent),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPromptsTab() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'JSON SKILL TEMPLATES',
-            style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: TextField(
-              controller: _templateController,
-              maxLines: null,
-              expands: true,
-              style: const TextStyle(
-                color: Colors.greenAccent,
-                fontSize: 12,
-                fontFamily: 'monospace',
-              ),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.black,
-                hintText: '{ "skill_name": "Prompt instruction..." }',
-                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.1)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.white10),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFooter() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: Colors.white10)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          ElevatedButton(
-            onPressed: _saveAll,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: const Text('SAVE & APPLY'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildKeyField(String label, TextEditingController controller, Color accentColor) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(color: accentColor, fontSize: 10, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          obscureText: true,
-          style: const TextStyle(color: Colors.white, fontSize: 13),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white.withValues(alpha: 0.05),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: const EdgeInsets.all(16),
-          ),
-        ),
-      ],
     );
   }
 }
