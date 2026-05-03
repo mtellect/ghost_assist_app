@@ -1,0 +1,39 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Ghost Assist (Dev)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--target",
+                "lib/main.dart"
+            ],
+            "toolArgs": [
+                "--dart-define-from-file=.dart_define.staging.json"
+            ]
+        },
+        {
+            "name": "Ghost Assist (Prod)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--target",
+                "lib/main.dart"
+            ],
+            "toolArgs": [
+                "--dart-define-from-file=.dart_define.production.json"
+            ]
+        },
+        {
+            "name": "Run clean_project task",
+            "type": "node",
+            "request": "attach",
+            "program": "${workspaceFolder}/lib/main.dart",
+            "preLaunchTask": "clean_project",
+            "console": "integratedTerminal"
+        }
+    ]
+}

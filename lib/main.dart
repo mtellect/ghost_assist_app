@@ -31,8 +31,8 @@ void main() async {
   // Enable Stealth Mode by default
   await WindowStealth.setStealthMode(true);
 
-  // Replace with actual API Key or handle via settings
-  const String geminiApiKey = 'YOUR_GEMINI_API_KEY';
+  // API Key from dart-define
+  const String geminiApiKey = String.fromEnvironment('GEMINI_API_KEY', defaultValue: 'YOUR_GEMINI_API_KEY');
 
   runApp(
     MultiProvider(
