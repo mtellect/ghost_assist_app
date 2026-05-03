@@ -44,11 +44,19 @@ class AssistantProvider extends ChangeNotifier {
 
   Future<void> toggleStealth() async {
     _isStealth = !_isStealth;
-    // Native stealth makes the window invisible to screen sharing/recording
+    
+    // 1. Native stealth (invisible to screen sharing/recording)
     await WindowStealth.setStealthMode(_isStealth);
     
-    // We keep the window slightly visible to the user so they can read responses
-    // but we can toggle the 'Always on Top' or transparency if needed.
+    // 2. Interactivity (ignore mouse when in stealth)
+    // await windowManager.setIgnoreMouseEvents(_isStealth);
+    
+    // 3. User Visibility (slightly visible vs fully visible)
+    // We use a very low opacity in stealth so the user can still 'peek' at it 
+    // without it being distracting, or 0.0 for full invisibility.
+    await windowManager.setOpacity(_isStealth ? 0.05 : 1.0);
+    
+    // 4. Force background refresh
     await windowManager.setBackgroundColor(Colors.transparent);
     
     notifyListeners();
