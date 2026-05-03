@@ -1,5 +1,5 @@
 {
   "avdmanager.sdkManager": "/Users/mapps/Library/Android/sdk/cmdline-tools/latest/bin/sdkmanager",
-  "dart.flutterSdkPath": ".fvm/versions/3.38.5",
+  "dart.flutterSdkPath": ".fvm/versions/3.41.4",
   "dart.lineLength": 100
 }
