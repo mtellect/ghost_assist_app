@@ -10,34 +10,30 @@ class ModeSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<AssistantProvider>();
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: AssistantMode.values.map((mode) {
-          final isSelected = provider.mode == mode;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(mode.name),
-              selected: isSelected,
-              onSelected: (_) => provider.setMode(mode),
-              selectedColor: Colors.blueAccent.withValues(alpha: 0.2),
-              backgroundColor: Colors.white.withValues(alpha: 0.05),
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.blueAccent : Colors.white60,
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-              side: BorderSide(
-                color: isSelected ? Colors.blueAccent : Colors.transparent,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      children: AssistantMode.values.map((mode) {
+        final isSelected = provider.mode == mode;
+        return ChoiceChip(
+          label: Text(mode.name),
+          selected: isSelected,
+          onSelected: (_) => provider.setMode(mode),
+          selectedColor: Colors.blueAccent.withValues(alpha: 0.2),
+          backgroundColor: Colors.white.withValues(alpha: 0.05),
+          labelStyle: TextStyle(
+            color: isSelected ? Colors.blueAccent : Colors.white60,
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+          side: BorderSide(
+            color: isSelected ? Colors.blueAccent : Colors.transparent,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        );
+      }).toList(),
     );
   }
 }

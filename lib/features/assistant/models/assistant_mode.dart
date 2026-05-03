@@ -1,4 +1,20 @@
 enum AssistantMode {
+  flutter(
+    name: 'Flutter',
+    description: 'Expert Dart/Flutter development, state management, and widgets.',
+  ),
+  ios(
+    name: 'iOS',
+    description: 'Swift, SwiftUI, and native Apple platform engineering.',
+  ),
+  android(
+    name: 'Android',
+    description: 'Kotlin, Jetpack Compose, and native Android architecture.',
+  ),
+  springboot(
+    name: 'Spring Boot',
+    description: 'Java/Spring Boot microservices and enterprise architecture.',
+  ),
   dsa(
     name: 'DSA',
     description: 'Data Structures & Algorithms solutions with complexity analysis.',
@@ -29,11 +45,11 @@ enum AssistantMode {
   ),
   devOps(
     name: 'DevOps',
-    description: 'Infrastructure, CI/CD, and deployment strategies.',
+    description: 'CI/CD, Cloud, and infrastructure automation.',
   ),
   dataScience(
     name: 'Data Science',
-    description: 'Analytics, ML approaches, and statistical methods.',
+    description: 'Machine learning, statistics, and data analysis.',
   );
 
   final String name;
