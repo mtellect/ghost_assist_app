@@ -95,6 +95,10 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  if (stealth_channel_) {
+    stealth_channel_ = nullptr;
+  }
+  
   if (flutter_controller_) {
     flutter_controller_ = nullptr;
   }
