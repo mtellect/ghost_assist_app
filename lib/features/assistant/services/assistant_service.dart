@@ -4,25 +4,30 @@ import '../models/assistant_mode.dart';
 import 'i_assistant_service.dart';
 import 'gemini_assistant_service.dart';
 import 'openai_assistant_service.dart';
+import 'claude_assistant_service.dart';
 import '../../../core/utils/logger.dart';
 
 class AssistantService implements IAssistantService {
   final GeminiAssistantService _geminiService;
   final OpenAiAssistantService _openaiService;
+  final ClaudeAssistantService _claudeService;
   
   AIModel _currentModel = AIModel.defaultModel;
 
   AssistantService({
     required String geminiApiKey,
     required String openaiApiKey,
+    required String anthropicApiKey,
   })  : _geminiService = GeminiAssistantService(apiKey: geminiApiKey),
-        _openaiService = OpenAiAssistantService(apiKey: openaiApiKey);
+        _openaiService = OpenAiAssistantService(apiKey: openaiApiKey),
+        _claudeService = ClaudeAssistantService(apiKey: anthropicApiKey);
 
   @override
   void setModel(AIModel model) {
     _currentModel = model;
     _geminiService.setModel(model);
     _openaiService.setModel(model);
+    _claudeService.setModel(model);
   }
 
   @override
@@ -44,8 +49,15 @@ class AssistantService implements IAssistantService {
         screenCapture: screenCapture,
         audioFile: audioFile,
       );
-    } else {
+    } else if (_currentModel.provider == AIProvider.openai) {
       return _openaiService.getResponse(
+        mode: mode,
+        prompt: fullPrompt,
+        screenCapture: screenCapture,
+        audioFile: audioFile,
+      );
+    } else {
+      return _claudeService.getResponse(
         mode: mode,
         prompt: fullPrompt,
         screenCapture: screenCapture,
@@ -58,6 +70,7 @@ class AssistantService implements IAssistantService {
   void resetChat() {
     _geminiService.resetChat();
     _openaiService.resetChat();
+    _claudeService.resetChat();
   }
 
   @override

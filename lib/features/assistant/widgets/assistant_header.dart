@@ -3,9 +3,17 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../providers/assistant_provider.dart';
 import '../models/ai_model.dart';
+import '../../settings/widgets/settings_dialog.dart';
 
 class AssistantHeader extends StatelessWidget {
   const AssistantHeader({super.key});
+
+  void _showSettings(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => const SettingsDialog(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +84,12 @@ class AssistantHeader extends StatelessWidget {
                     child: Text('OPENAI', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.greenAccent)),
                   ),
                   ...AIModel.values.where((m) => m.provider == AIProvider.openai).map((model) => _buildMenuItem(model, provider)),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem(
+                    enabled: false,
+                    child: Text('ANTHROPIC', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orangeAccent)),
+                  ),
+                  ...AIModel.values.where((m) => m.provider == AIProvider.anthropic).map((model) => _buildMenuItem(model, provider)),
                 ];
               },
               tooltip: 'Switch Model',
@@ -85,6 +99,11 @@ class AssistantHeader extends StatelessWidget {
               icon: const Icon(Icons.refresh, size: 18, color: Colors.white38),
               onPressed: provider.resetChat,
               tooltip: 'Reset Chat',
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings, size: 18, color: Colors.white38),
+              onPressed: () => _showSettings(context),
+              tooltip: 'Settings',
             ),
             IconButton(
               icon: const Icon(Icons.close, size: 18, color: Colors.white38),
@@ -127,6 +146,7 @@ class AssistantHeader extends StatelessWidget {
 
   Color _getModelColor(AIModel model) {
     if (model.provider == AIProvider.openai) return Colors.greenAccent;
+    if (model.provider == AIProvider.anthropic) return Colors.orangeAccent;
     return model == AIModel.geminiPro ? Colors.amberAccent : Colors.blueAccent;
   }
 }

@@ -36,6 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.9
   google_generative_ai: ^0.4.7
   dart_openai: ^5.1.0
+  anthropic_sdk_dart: ^0.2.1
+  flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.3.5
   window_manager: ^0.5.1
   screen_retriever: ^0.2.0
   screen_capturer: ^0.2.3
