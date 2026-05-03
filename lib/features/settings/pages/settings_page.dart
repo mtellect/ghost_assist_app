@@ -65,9 +65,10 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                 Tab(text: 'SKILL PROMPTS'),
               ],
             ),
-            const Expanded(
+            Expanded(
               child: TabBarView(
-                children: [
+                controller: _tabController,
+                children: const [
                   VaultSettingsTab(),
                   PromptSettingsTab(),
                 ],
