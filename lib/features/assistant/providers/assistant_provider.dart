@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/assistant_mode.dart';
-import '../services/audio_interceptor_service.dart';
+import '../services/i_audio_interceptor_service.dart';
 import '../services/i_assistant_service.dart';
 import '../models/gemini_model.dart';
 
 class AssistantProvider extends ChangeNotifier {
   final IAssistantService _assistantService;
-  final AudioInterceptorService _audioService = AudioInterceptorService();
+  final IAudioInterceptorService _audioService;
   
   AssistantMode _currentMode = AssistantMode.flutter;
   GeminiModel _currentModel = GeminiModel.proLatest;
@@ -16,7 +16,11 @@ class AssistantProvider extends ChangeNotifier {
   bool _isListening = false;
   File? _lastCapture;
 
-  AssistantProvider(this._assistantService);
+  AssistantProvider({
+    required IAssistantService assistantService,
+    required IAudioInterceptorService audioService,
+  })  : _assistantService = assistantService,
+        _audioService = audioService;
 
   AssistantMode get mode => _currentMode;
   GeminiModel get geminiModel => _currentModel;
@@ -50,7 +54,14 @@ class AssistantProvider extends ChangeNotifier {
         );
       }
     } else {
-      await _audioService.startListening();
+      await _audioService.startListening(onAutoStop: (path) async {
+        _isListening = false;
+        notifyListeners();
+        await ask(
+          'I just spoke. Please transcribe my question and answer it based on the current mode.',
+          audioFile: File(path),
+        );
+      });
       _isListening = _audioService.isListening;
       notifyListeners();
     }

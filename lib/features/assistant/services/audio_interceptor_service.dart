@@ -1,37 +1,62 @@
+import 'dart:async';
 import 'package:record/record.dart';
 import '../../../core/utils/logger.dart';
 
-class AudioInterceptorService {
+import 'i_audio_interceptor_service.dart';
+
+class AudioInterceptorService implements IAudioInterceptorService {
   final AudioRecorder _recorder = AudioRecorder();
   bool _isListening = false;
+  StreamSubscription<Amplitude>? _amplitudeSub;
+  DateTime? _lastVoiceTime;
+  final double _silenceThreshold = -40.0; // dB
+  final Duration _silenceDuration = const Duration(seconds: 2);
 
+  @override
   bool get isListening => _isListening;
 
-  Future<void> startListening() async {
+  @override
+  Future<void> startListening({Function(String path)? onAutoStop}) async {
     try {
       if (await _recorder.hasPermission()) {
-        // We don't actually need to save to a file for transcription in the future,
-        // but for now we'll just initialize the stream to verify it works.
         const config = RecordConfig();
-        
-        // Start recording to a temporary location (we'll discard this later)
-        // In a real STT implementation, we would use _recorder.startStream(config)
-        await _recorder.start(config, path: 'temp_audio.m4a');
+        final path = 'temp_audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        await _recorder.start(config, path: path);
         _isListening = true;
+        _lastVoiceTime = DateTime.now();
+
         GhostLogger.i('Audio interceptor started listening...', tag: 'AudioService');
-      } else {
-        GhostLogger.w('Microphone permission denied', tag: 'AudioService');
+
+        // Start amplitude monitoring for VAD
+        _amplitudeSub = _recorder.onAmplitudeChanged(const Duration(milliseconds: 200)).listen((
+          amp,
+        ) async {
+          if (amp.current > _silenceThreshold) {
+            _lastVoiceTime = DateTime.now();
+          } else {
+            if (_lastVoiceTime != null &&
+                DateTime.now().difference(_lastVoiceTime!) > _silenceDuration) {
+              GhostLogger.i('Silence detected, auto-stopping...', tag: 'AudioService');
+              final savedPath = await stopListening();
+              if (savedPath != null && onAutoStop != null) {
+                onAutoStop(savedPath);
+              }
+            }
+          }
+        });
       }
     } catch (e) {
       GhostLogger.e('Failed to start audio interceptor', tag: 'AudioService', error: e);
     }
   }
 
+  @override
   Future<String?> stopListening() async {
     try {
+      await _amplitudeSub?.cancel();
+      _amplitudeSub = null;
       final path = await _recorder.stop();
       _isListening = false;
-      GhostLogger.i('Audio interceptor stopped listening. File: $path', tag: 'AudioService');
       return path;
     } catch (e) {
       GhostLogger.e('Failed to stop audio interceptor', tag: 'AudioService', error: e);
@@ -39,6 +64,7 @@ class AudioInterceptorService {
     }
   }
 
+  @override
   void dispose() {
     _recorder.dispose();
   }

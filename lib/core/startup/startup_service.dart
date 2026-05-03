@@ -4,6 +4,8 @@ import '../../features/assistant/services/assistant_service.dart';
 import '../../features/assistant/services/i_assistant_service.dart';
 import '../../features/assistant/providers/assistant_provider.dart';
 import '../../features/assistant/services/screen_capture_service.dart';
+import '../../features/assistant/services/i_audio_interceptor_service.dart';
+import '../../features/assistant/services/audio_interceptor_service.dart';
 import 'i_startup_service.dart';
 
 import '../enums/api_environment_enum.dart';
@@ -37,12 +39,19 @@ class StartUpService implements IStartUpService {
     getIt.registerLazySingleton<ScreenCaptureService>(
       () => ScreenCaptureService(),
     );
+
+    getIt.registerLazySingleton<IAudioInterceptorService>(
+      () => AudioInterceptorService(),
+    );
   }
 
   @override
   Future<void> registerControllers() async {
     getIt.registerLazySingleton<AssistantProvider>(
-      () => AssistantProvider(getIt<IAssistantService>()),
+      () => AssistantProvider(
+        assistantService: getIt<IAssistantService>(),
+        audioService: getIt<IAudioInterceptorService>(),
+      ),
     );
   }
 
