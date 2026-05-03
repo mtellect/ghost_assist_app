@@ -10,24 +10,20 @@ class AssistantHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AssistantProvider>();
-    
+
     return GestureDetector(
       onPanStart: (details) => windowManager.startDragging(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.white.withValues(alpha: 0.05),
-            ),
-          ),
+          border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
         ),
         child: Row(
           children: [
             const Icon(Icons.auto_awesome, color: Colors.blueAccent, size: 20),
             const SizedBox(width: 12),
             const Text(
-              'GHOST ASSIST',
+              '👻 GHOST ASSIST',
               style: TextStyle(
                 letterSpacing: 2,
                 fontWeight: FontWeight.w900,
@@ -36,7 +32,7 @@ class AssistantHeader extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            
+
             // Audio Listening Toggle
             IconButton(
               icon: Icon(
@@ -64,7 +60,9 @@ class AssistantHeader extends StatelessWidget {
               icon: Icon(
                 provider.geminiModel == GeminiModel.proLatest ? Icons.bolt : Icons.flash_on,
                 size: 18,
-                color: provider.geminiModel == GeminiModel.proLatest ? Colors.amberAccent : Colors.blueAccent,
+                color: provider.geminiModel == GeminiModel.proLatest
+                    ? Colors.amberAccent
+                    : Colors.blueAccent,
               ),
               onSelected: provider.setModel,
               itemBuilder: (context) => GeminiModel.values.map((model) {
@@ -75,15 +73,26 @@ class AssistantHeader extends StatelessWidget {
                       Icon(
                         model == GeminiModel.proLatest ? Icons.bolt : Icons.flash_on,
                         size: 16,
-                        color: model == GeminiModel.proLatest ? Colors.amberAccent : Colors.blueAccent,
+                        color: model == GeminiModel.proLatest
+                            ? Colors.amberAccent
+                            : Colors.blueAccent,
                       ),
                       const SizedBox(width: 8),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(model.label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                          Text(model.description, style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.6))),
+                          Text(
+                            model.label,
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            model.description,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.white.withValues(alpha: 0.6),
+                            ),
+                          ),
                         ],
                       ),
                       if (provider.geminiModel == model) ...[
@@ -96,7 +105,7 @@ class AssistantHeader extends StatelessWidget {
               }).toList(),
               tooltip: 'Switch Model',
             ),
-            
+
             IconButton(
               icon: const Icon(Icons.refresh, size: 18, color: Colors.white38),
               onPressed: provider.resetChat,
