@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
@@ -21,7 +20,9 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
   final _geminiController = TextEditingController();
   final _openaiController = TextEditingController();
   final _anthropicController = TextEditingController();
-  final _templateController = TextEditingController();
+  
+  // New: Individual controllers for each skill
+  final Map<AssistantSkill, TextEditingController> _skillControllers = {};
 
   @override
   void initState() {
@@ -32,12 +33,12 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
     _openaiController.text = provider.openaiKey;
     _anthropicController.text = provider.anthropicKey;
 
-    // Load current templates into JSON editor
-    final templates = <String, String>{};
+    // Initialize individual skill controllers
     for (var skill in AssistantSkill.values) {
-      templates[skill.name] = provider.getCustomTemplate(skill) ?? '';
+      _skillControllers[skill] = TextEditingController(
+        text: provider.getCustomTemplate(skill) ?? '',
+      );
     }
-    _templateController.text = const JsonEncoder.withIndent('  ').convert(templates);
   }
 
   Future<void> _saveAll() async {
@@ -50,27 +51,17 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
       anthropic: _anthropicController.text,
     );
 
-    // Save Templates
-    try {
-      final Map<String, dynamic> decoded = jsonDecode(_templateController.text);
-      final Map<String, String> templates = decoded.map((k, v) => MapEntry(k, v.toString()));
-      await provider.saveTemplates(templates);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Invalid JSON in templates: $e'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-        return;
-      }
-    }
+    // Save Skill Templates
+    final Map<String, String> templates = {};
+    _skillControllers.forEach((skill, controller) {
+      templates[skill.name] = controller.text;
+    });
+    await provider.saveTemplates(templates);
 
     if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Settings saved successfully.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Settings saved successfully.')),
+      );
       widget.onBack();
     }
   }
@@ -81,7 +72,9 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
     _geminiController.dispose();
     _openaiController.dispose();
     _anthropicController.dispose();
-    _templateController.dispose();
+    for (var controller in _skillControllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -113,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
                     openaiController: _openaiController,
                     anthropicController: _anthropicController,
                   ),
-                  PromptSettingsTab(templateController: _templateController),
+                  PromptSettingsTab(skillControllers: _skillControllers),
                 ],
               ),
             ),
