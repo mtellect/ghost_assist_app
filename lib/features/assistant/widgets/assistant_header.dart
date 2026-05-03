@@ -6,13 +6,11 @@ import '../models/ai_model.dart';
 import '../../settings/widgets/settings_dialog.dart';
 
 class AssistantHeader extends StatelessWidget {
-  const AssistantHeader({super.key});
+  final VoidCallback onSettingsToggle;
+  const AssistantHeader({super.key, required this.onSettingsToggle});
 
   void _showSettings(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const SettingsDialog(),
-    );
+    onSettingsToggle();
   }
 
   @override
