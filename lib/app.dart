@@ -8,7 +8,7 @@ import 'core/startup/startup_service.dart';
 import 'core/utils/logger.dart';
 import 'features/assistant/providers/assistant_provider.dart';
 import 'features/settings/providers/settings_provider.dart';
-import 'features/assistant/floating_assistant_panel.dart';
+import 'features/assistant/index_page.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'core/services/hotkey_service.dart';
 
@@ -112,7 +112,7 @@ class GhostAssistApp extends StatelessWidget {
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.transparent,
       ),
-      home: const FloatingAssistantPanel(),
+      home: const IndexPage(),
     );
   }
 }
