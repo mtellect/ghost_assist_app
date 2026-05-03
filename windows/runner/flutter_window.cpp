@@ -27,7 +27,7 @@ bool FlutterWindow::OnCreate() {
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
-  HWND hwnd = GetNativeWindow();
+  HWND hwnd = GetHandle();
   if (hwnd != NULL) {
     // 1. Always on Top (Equivalent to macOS .floating)
     // Ensures the assistant is visible over full-screen apps and other windows.
@@ -52,7 +52,7 @@ bool FlutterWindow::OnCreate() {
             auto enabled_it = arguments->find(flutter::EncodableValue("enabled"));
             if (enabled_it != arguments->end() && std::holds_alternative<bool>(enabled_it->second)) {
               bool enabled = std::get<bool>(enabled_it->second);
-              HWND hwnd = GetNativeWindow();
+              HWND hwnd = GetHandle();
               
               if (hwnd != NULL) {
                 // WDA_EXCLUDEFROMCAPTURE (0x00000011) hides window from screen capture/sharing
@@ -68,7 +68,7 @@ bool FlutterWindow::OnCreate() {
           }
           result->Error("INVALID_ARGUMENTS", "Expected boolean 'enabled'");
         } else if (call.method_name().compare("isStealthEnabled") == 0) {
-          HWND hwnd = GetNativeWindow();
+          HWND hwnd = GetHandle();
           if (hwnd != NULL) {
             DWORD affinity = 0;
             if (GetWindowDisplayAffinity(hwnd, &affinity)) {
