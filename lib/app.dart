@@ -6,7 +6,7 @@ import 'core/native/window_stealth.dart';
 import 'core/startup/startup_service.dart';
 import 'core/utils/logger.dart';
 import 'features/assistant/providers/assistant_provider.dart';
-import 'features/assistant/widgets/floating_assistant_panel.dart';
+import 'features/assistant/floating_assistant_panel.dart';
 
 Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
   WidgetsFlutterBinding.ensureInitialized();

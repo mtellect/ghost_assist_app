@@ -4,6 +4,7 @@ import '../models/assistant_mode.dart';
 import '../services/i_audio_interceptor_service.dart';
 import '../services/i_assistant_service.dart';
 import '../models/gemini_model.dart';
+import '../../../core/native/window_stealth.dart';
 
 class AssistantProvider extends ChangeNotifier {
   final IAssistantService _assistantService;
@@ -14,6 +15,7 @@ class AssistantProvider extends ChangeNotifier {
   String _response = '';
   bool _isLoading = false;
   bool _isListening = false;
+  bool _isStealth = false;
   File? _lastCapture;
 
   AssistantProvider({
@@ -27,10 +29,17 @@ class AssistantProvider extends ChangeNotifier {
   String get response => _response;
   bool get isLoading => _isLoading;
   bool get isListening => _isListening;
+  bool get isStealth => _isStealth;
   File? get lastCapture => _lastCapture;
 
   void setMode(AssistantMode mode) {
     _currentMode = mode;
+    notifyListeners();
+  }
+
+  Future<void> toggleStealth() async {
+    _isStealth = !_isStealth;
+    await WindowStealth.setStealthMode(_isStealth);
     notifyListeners();
   }
 
