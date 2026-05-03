@@ -1,11 +1,22 @@
 name: 👻 Ghost Assist Build
 
 on:
-  workflow_dispatch: # Manual trigger only
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Select Platform to Build'
+        required: true
+        default: 'Both'
+        type: choice
+        options:
+          - Windows
+          - macOS
+          - Both
 
 jobs:
   build-windows:
     name: Build Windows
+    if: github.event.inputs.platform == 'Windows' || github.event.inputs.platform == 'Both'
     runs-on: windows-latest
     steps:
       - name: 📥 Checkout Repository
@@ -35,6 +46,7 @@ jobs:
 
   build-macos:
     name: Build macOS
+    if: github.event.inputs.platform == 'macOS' || github.event.inputs.platform == 'Both'
     runs-on: macos-latest
     steps:
       - name: 📥 Checkout Repository
