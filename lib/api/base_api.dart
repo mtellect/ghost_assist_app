@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:ghost_assist_app/core/enums/api_environment_enum.dart';
+import 'package:ghost_assist_app/core/utils/logger.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:uuid/uuid.dart';

@@ -117,5 +117,5 @@ msix_config:
   publisher: CN=MtellecT
   identity_name: com.mtellect.ghostassist
   msix_version: 1.0.0.0
-  capabilities: internetClient, location, microphone
+  capabilities: internetClient, privateNetworkClientServer, location, microphone
   install_certificate: false

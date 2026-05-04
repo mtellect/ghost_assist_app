@@ -169,10 +169,9 @@ class AssistantProvider extends ChangeNotifier {
 
     _textController.clear();
     
-    // Auto-capture screen if it's a text query to provide context
-    final capture = await _captureService.captureScreen();
-    
-    await ask(text, screenCapture: capture);
+    // We removed auto-capture here to prevent flicker on Windows.
+    // Use dedicated capture buttons if visual context is needed.
+    await ask(text);
   }
 
   @override
