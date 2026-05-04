@@ -74,6 +74,23 @@ class ClaudeAssistantService implements IAssistantService {
   }
 
   @override
+  Stream<String> getResponseStream({
+    required AssistantSkill skill,
+    required String prompt,
+    File? screenCapture,
+    File? audioFile,
+  }) async* {
+    // Claude streaming to be implemented
+    final response = await getResponse(
+      skill: skill,
+      prompt: prompt,
+      screenCapture: screenCapture,
+      audioFile: audioFile,
+    );
+    yield response;
+  }
+
+  @override
   void resetChat() {
     _history.clear();
   }

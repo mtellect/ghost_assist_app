@@ -10,7 +10,7 @@ class AudioInterceptorService implements IAudioInterceptorService {
   StreamSubscription<Amplitude>? _amplitudeSub;
   DateTime? _lastVoiceTime;
   final double _silenceThreshold = -25.0; // dB (Less sensitive to noise)
-  final Duration _silenceDuration = const Duration(milliseconds: 1500);
+  final Duration _silenceDuration = const Duration(milliseconds: 1000);
 
   @override
   bool get isListening => _isListening;

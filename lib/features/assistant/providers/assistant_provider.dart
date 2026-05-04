@@ -134,18 +134,25 @@ class AssistantProvider extends ChangeNotifier {
 
   Future<void> ask(String prompt, {File? screenCapture, File? audioFile}) async {
     _isLoading = true;
+    _response = ''; // Clear previous response
     if (screenCapture != null) _lastCapture = screenCapture;
     notifyListeners();
 
     try {
-      _response = await _assistantService.getResponse(
+      final stream = _assistantService.getResponseStream(
         skill: _currentSkill,
         prompt: prompt,
         screenCapture: screenCapture,
         audioFile: audioFile,
       );
+
+      await for (final chunk in stream) {
+        _response = chunk;
+        notifyListeners();
+      }
     } catch (e) {
       _response = 'Error: $e';
+      notifyListeners();
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -132,6 +132,94 @@ class OpenAiAssistantService implements IAssistantService {
   }
 
   @override
+  Stream<String> getResponseStream({
+    required AssistantSkill skill,
+    required String prompt,
+    File? screenCapture,
+    File? audioFile,
+  }) async* {
+    String finalPrompt = prompt;
+
+    // 1. Handle Audio Transcription (Whisper)
+    if (audioFile != null) {
+      try {
+        final transcription = await OpenAI.instance.audio.createTranscription(
+          model: "whisper-1",
+          file: audioFile,
+          responseFormat: OpenAIAudioResponseFormat.json,
+        );
+        if (transcription is OpenAITranscriptionModel) {
+          finalPrompt = transcription.text;
+        }
+      } catch (e) {
+        GhostLogger.e('Whisper Transcription failed', tag: 'OpenAIService', error: e);
+      }
+    }
+
+    // 2. Build Multi-modal payload
+    final List<Map<String, dynamic>> contentItems = [
+      {"type": "text", "text": finalPrompt},
+    ];
+
+    if (screenCapture != null) {
+      final bytes = await screenCapture.readAsBytes();
+      final base64Image = base64Encode(bytes);
+      contentItems.add({
+        "type": "image_url",
+        "image_url": {"url": "data:image/png;base64,$base64Image"},
+      });
+    }
+
+    _history.add({"role": "user", "content": contentItems});
+
+    try {
+      final response = await apiClient.dio.post(
+        'https://api.openai.com/v1/chat/completions',
+        options: Options(
+          headers: {'Authorization': 'Bearer $apiKey'},
+          responseType: ResponseType.stream,
+        ),
+        data: {
+          "model": _currentModel.id,
+          "messages": _history,
+          "stream": true,
+        },
+      );
+
+      final stream = response.data.stream;
+      String fullResponse = '';
+
+      await for (final List<int> chunk in stream) {
+        final String decoded = utf8.decode(chunk);
+        final List<String> lines = decoded.split('\n');
+
+        for (final String line in lines) {
+          if (line.isEmpty || line.startsWith('event:')) continue;
+          if (line == 'data: [DONE]') break;
+
+          if (line.startsWith('data: ')) {
+            try {
+              final json = jsonDecode(line.substring(6));
+              final delta = json['choices'][0]['delta']['content'];
+              if (delta != null) {
+                fullResponse += delta;
+                yield fullResponse;
+              }
+            } catch (_) {
+              // Partial JSON or heartbeat, ignore
+            }
+          }
+        }
+      }
+
+      _history.add({"role": "assistant", "content": fullResponse});
+    } catch (e) {
+      GhostLogger.e('OpenAI Stream Failed', tag: 'OpenAIService', error: e);
+      yield 'OpenAI Error: $e';
+    }
+  }
+
+  @override
   void resetChat() {
     _history.clear();
   }

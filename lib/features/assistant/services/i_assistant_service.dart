@@ -11,6 +11,14 @@ abstract class IAssistantService {
     File? audioFile,
   });
 
+  /// Streams the response from the AI model for real-time feedback.
+  Stream<String> getResponseStream({
+    required AssistantSkill skill,
+    required String prompt,
+    File? screenCapture,
+    File? audioFile,
+  });
+
   /// Provides context-specific instructions based on the interview skill.
   String getSystemPrompt(AssistantSkill skill);
 

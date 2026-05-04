@@ -77,6 +77,37 @@ class AssistantService implements IAssistantService {
   }
 
   @override
+  Stream<String> getResponseStream({
+    required AssistantSkill skill,
+    required String prompt,
+    File? screenCapture,
+    File? audioFile,
+  }) async* {
+    _syncKeys();
+    final systemPrompt = getSystemPrompt(skill);
+    final fullPrompt = '$systemPrompt\n\n$prompt';
+
+    GhostLogger.d('Streaming request to ${_currentModel.provider.name} for skill: ${skill.name}...', tag: 'AssistantService');
+
+    if (_currentModel.provider == AIProvider.openai) {
+      yield* _openaiService.getResponseStream(
+        skill: skill,
+        prompt: fullPrompt,
+        screenCapture: screenCapture,
+        audioFile: audioFile,
+      );
+    } else {
+      final response = await getResponse(
+        skill: skill,
+        prompt: prompt,
+        screenCapture: screenCapture,
+        audioFile: audioFile,
+      );
+      yield response;
+    }
+  }
+
+  @override
   void resetChat() {
     _geminiService.resetChat();
     _openaiService.resetChat();
