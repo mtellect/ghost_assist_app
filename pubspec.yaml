@@ -118,4 +118,4 @@ msix_config:
   identity_name: com.mtellect.ghostassist
   msix_version: 1.0.0.0
   capabilities: internetClient, location, microphone
-  install_certificate: true
+  install_certificate: false
