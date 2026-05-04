@@ -31,7 +31,7 @@ class _IndexPageState extends State<IndexPage> {
       await windowManager.setResizable(true);
       await windowManager.setSize(const Size(600, 900));
       await windowManager.center();
-      
+
       // Restore glass effect based on platform
       if (Platform.isWindows) {
         await glass.Window.setEffect(

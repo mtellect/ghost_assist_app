@@ -122,6 +122,7 @@ class GhostHeader extends StatelessWidget {
     return Center(
       child: Container(
         height: 32,
+
         decoration: BoxDecoration(
           color: const Color(0xFF1A1A1B).withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(16),
@@ -165,7 +166,9 @@ class GhostHeader extends StatelessWidget {
           style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blueAccent),
         ),
       ),
-      ...AIModel.values.where((m) => m.provider == AIProvider.gemini).map((m) => _buildMenuItem(m, provider)),
+      ...AIModel.values
+          .where((m) => m.provider == AIProvider.gemini)
+          .map((m) => _buildMenuItem(m, provider)),
       const PopupMenuDivider(),
       const PopupMenuItem(
         enabled: false,
@@ -174,7 +177,9 @@ class GhostHeader extends StatelessWidget {
           style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.greenAccent),
         ),
       ),
-      ...AIModel.values.where((m) => m.provider == AIProvider.openai).map((m) => _buildMenuItem(m, provider)),
+      ...AIModel.values
+          .where((m) => m.provider == AIProvider.openai)
+          .map((m) => _buildMenuItem(m, provider)),
       const PopupMenuDivider(),
       const PopupMenuItem(
         enabled: false,
@@ -183,7 +188,9 @@ class GhostHeader extends StatelessWidget {
           style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orangeAccent),
         ),
       ),
-      ...AIModel.values.where((m) => m.provider == AIProvider.anthropic).map((m) => _buildMenuItem(m, provider)),
+      ...AIModel.values
+          .where((m) => m.provider == AIProvider.anthropic)
+          .map((m) => _buildMenuItem(m, provider)),
     ];
   }
 
@@ -214,7 +221,8 @@ class GhostHeader extends StatelessWidget {
     );
   }
 
-  IconData _getModelIcon(AIModel model) => model == AIModel.geminiPro || model == AIModel.gpt4o ? Icons.bolt : Icons.flash_on;
+  IconData _getModelIcon(AIModel model) =>
+      model == AIModel.geminiPro || model == AIModel.gpt4o ? Icons.bolt : Icons.flash_on;
 
   Color _getModelColor(AIModel model) {
     if (model.provider == AIProvider.openai) return Colors.greenAccent;
