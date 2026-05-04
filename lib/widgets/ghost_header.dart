@@ -120,7 +120,7 @@ class GhostHeader extends StatelessWidget {
 
   Widget _buildCollapsedContent() {
     return Container(
-      width: 350,
+      width: 400,
       height: 45,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
