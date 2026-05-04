@@ -12,10 +12,27 @@ The assistant utilizes native platform APIs to ensure the application window is 
 - **Windows**: `SetWindowDisplayAffinity` (WDA_EXCLUDEFROMCAPTURE) integration.
 Even when hidden from others, it remains 100% visible and interactive on your physical monitor.
 
-### 🧠 Skill-Based Coaching
-Ghost Assist has transitioned to a **Skill-Based Architecture**. Choose your interview domain, and the assistant instantly adapts its personality and depth:
+### 🎙️ Interview Mode (Infinite Standby)
+Our advanced **Conversation Mode** allows for a truly hands-free experience:
+- **Infinite Standby**: The app stays active throughout your session, automatically restarting the listener after every turn.
+- **Hysteresis VAD**: Sophisticated Voice Activity Detection with amplitude smoothing ensures it never cuts you off during a thinking pause.
+- **Context-Aware**: One-click "Expert Actions" automatically capture your screen and audio for the most accurate AI coaching.
+
+### 🧠 Skill-Based Architecture
+Choose your interview domain, and the assistant instantly adapts its personality and depth:
 - **Expert Domains**: Flutter, iOS, Android, Spring Boot, DSA, System Design, Behavioral, and more.
 - **Custom Prompts**: Every skill's system instructions can be fine-tuned in the Settings Hub.
+
+---
+
+## 🛡️ Stealth Capabilities (Detectability Audit)
+
+| Vector | Status | Technical Implementation |
+| :--- | :--- | :--- |
+| **Screen Sharing** | ✅ **Invisible** | Native Window Affinity (Windows) & SharingType (macOS) prevents capture by Zoom, Teams, and Meet. |
+| **Audio Leakage** | ✅ **Private** | Direct microphone capture with no system loopback. Interviewers cannot "hear" the app. |
+| **Mouse/KB Activity** | ✅ **Minimal** | "Interview Mode" is 100% hands-free. No suspicious mouse movements during the session. |
+| **Proctoring Software** | ⚠️ **Medium** | Invisible to screen capture, but may be detected by aggressive background process scanners. |
 
 ---
 
@@ -24,73 +41,19 @@ Ghost Assist has transitioned to a **Skill-Based Architecture**. Choose your int
 ### **Windows**
 1. **Download**: Get `ghost-assist-windows.zip` from GitHub.
 2. **Extract All**: Right-click the ZIP and select **"Extract All"**. 
-   - ⚠️ **Important**: Do not run the `.exe` from inside the ZIP. You must extract the entire folder, as the `.exe` depends on the `.dll` files next to it.
 3. **Launch**: Open the extracted folder and run **`Ghost Assist.exe`**.
 
 ### **macOS**
 1. **Download**: Get `ghost-assist-macos.zip`.
 2. **Extract**: Double-click to extract the `Ghost Assist.app`.
-3. **Move**: Drag the app to your `/Applications` folder.
-4. **First Run**: Right-click the app and select **"Open"** to bypass security warnings.
-
----
-
-## 💻 Developer Setup
-
-This project uses **[FVM](https://fvm.app/)** to ensure SDK consistency across platforms.
-
-### 1. Requirements
-- macOS 12.0+ or Windows 10 (Version 2004)+
-- **Dart SDK** installed on your host machine.
-
-### 2. Initial Setup (FVM)
-First, install FVM and pull the project's pinned Flutter SDK:
-```bash
-# Install FVM globally
-dart pub global activate fvm
-
-# Install the pinned Flutter version (from .fvmrc)
-fvm install
-```
-
-### 3. Installation & Build
-Always prepend `fvm` to your flutter commands to use the project-specific SDK:
-
-```bash
-# Clone the repository
-git clone https://github.com/mtellect/ghost_assist_app.git
-cd ghost_assist_app
-
-# Install dependencies
-fvm flutter pub get
-
-# Run the app
-fvm flutter run -d macos  # or windows
-```
-
-### 4. Build for Release
-To generate a production-ready binary:
-```bash
-# macOS
-fvm flutter build macos --release
-
-# Windows
-fvm flutter build windows --release
-```
+3. **First Run**: Right-click the app and select **"Open"** to bypass security warnings.
 
 ---
 
 ## 🛠️ Tech Stack
 - **SDK**: Flutter (Managed by FVM)
 - **AI Engine**: Multi-Provider (Gemini, Claude, OpenAI)
-- **State Management**: Provider & GetIt
+- **State Management**: Provider
 - **Native**: Custom C++/Swift Bridge for Stealth Parity.
-
----
-
-## 🔒 Security & Privacy
-Ghost Assist is designed with a **"Local First"** philosophy.
-- **Vault**: API keys are stored in the platform's secure enclave (Keychain/Data Protection API).
-- **Ephemeral Context**: Screen captures and audio recordings are handled as temporary files and never stored permanently.
 
 *Built with precision for the modern developer.* 👻💻

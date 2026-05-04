@@ -9,7 +9,7 @@
 - [x] **Skill-Based Identity**: Tailored expert instructions for specific technical and behavioral domains.
 - [x] **Multi-Model Support**: Integrated Gemini, Claude 3.5, and GPT-4o.
 - [x] **Secure Vault**: API keys stored in system-native secure storage.
-- [x] **Voice Interaction**: Intelligent hands-free mode with VAD (Voice Activity Detection).
+- [x] **Interview Mode**: Continuous, hands-free standby with auto-restart and Hysteresis VAD.
 
 ---
 
@@ -31,30 +31,24 @@
 
 ### Phase 3: Interaction & Reliability (Completed)
 - [x] **Global Hotkeys**: System-wide shortcuts (`Option + S, F, L, H`) on both platforms.
-- [x] **Active Listener**: VAD-based auto-stop and auto-trigger for voice queries.
-- [x] **Architecture Refactor**: Implemented `IndexPage` orchestration and modular widget decomposition.
-- [x] **Unshakeable Overlay**: Elevated window levels (Floating/TopMost) to persist over full-screen apps.
+- [x] **Infinite Standby**: Auto-restart listening loop for truly hands-free sessions.
+- [x] **Hysteresis VAD**: Amplitude smoothing and moving average tracking to prevent mid-sentence cutoffs.
+- [x] **Unified Stealth Frame**: Centralized `GhostHeader` with master window control and adaptive stealth pill.
+- [x] **Expert Context Actions**: Smart "What should I say?" flow with automated screenshot integration.
 
 ### Phase 4: Production Ecosystem (In Progress)
 - [x] **Secure Storage**: Integration of `flutter_secure_storage` for all API credentials.
 - [x] **Custom Prompt Dashboard**: Intuitive UI for fine-tuning skill instructions.
-- [ ] **Vision Refinement**: Finalize multi-image analysis for Claude and Gemini SDKs.
+- [/] **Vision Refinement**: Finalize multi-image analysis for Claude and Gemini SDKs.
 - [ ] **Auto-Updater**: GitHub-integrated update mechanism for the desktop client.
 - [ ] **Release Packaging**: DMG and MSIX installer workflows.
 
 ---
 
 ## 📐 Architecture Guidelines
-- **Orchestration**: `IndexPage` acts as the master shell for HUD navigation.
+- **Orchestration**: `IndexPage` acts as the master shell for HUD navigation and window state.
+- **Unified Header**: `GhostHeader` handles all window controls, state transitions, and stealth logic.
 - **State Management**: Provider (ChangeNotifier) with localized session controllers.
 - **Dependency Injection**: GetIt with `StartUpService` in `lib/core/startup/`.
-- **Native Parity**: Maintain shared MethodChannel signatures across `Swift` and `C++` runners.
-
----
-
-## 📝 Coding Standards
-- Use **Dart 3** features (records, patterns, class modifiers).
-- Maintain **100% Stealth** during development (verify with Zoom/Teams).
-- Keep UI components granular and focused.
 
 *Built with precision for the modern developer.* 👻💻
