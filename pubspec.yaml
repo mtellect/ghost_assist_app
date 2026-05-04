@@ -39,6 +39,7 @@ dependencies:
   anthropic_sdk_dart: ^0.2.1
   shared_preferences: ^2.5.5
   window_manager: ^0.5.1
+  flutter_acrylic: ^1.1.4
   screen_retriever: ^0.2.0
   screen_capturer: ^0.2.3
   google_fonts: ^8.1.0

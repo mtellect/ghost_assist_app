@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_acrylic/flutter_acrylic.dart' as glass;
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'core/enums/api_environment_enum.dart';
@@ -21,6 +23,18 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
 
   // Initialize Window Manager
   await windowManager.ensureInitialized();
+  await glass.Window.initialize();
+  
+  if (Platform.isWindows) {
+    await glass.Window.setEffect(
+      effect: glass.WindowEffect.acrylic,
+      color: const Color(0xCC0A0A0B),
+    );
+  } else if (Platform.isMacOS) {
+    await glass.Window.setEffect(
+      effect: glass.WindowEffect.acrylic,
+    );
+  }
 
   GhostLogger.i('Initializing window...', tag: 'App');
   final bool isDebug = environment.key == EnvironmentKeys.staging;

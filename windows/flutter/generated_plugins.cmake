@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  flutter_acrylic
   hotkey_manager_windows
   record_windows
   screen_capturer_windows
