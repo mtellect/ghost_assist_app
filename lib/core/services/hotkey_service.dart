@@ -4,7 +4,11 @@ import '../utils/logger.dart';
 
 class HotKeyService {
   Future<void> init() async {
-    await hotKeyManager.unregisterAll();
+    try {
+      await hotKeyManager.unregisterAll();
+    } catch (e) {
+      GhostLogger.e('Failed to unregister hotkeys during init', tag: 'HotKeyService', error: e);
+    }
   }
 
   Future<void> registerHotKey({

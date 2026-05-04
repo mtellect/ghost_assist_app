@@ -34,11 +34,13 @@ class AssistantProvider extends ChangeNotifier {
 
   AssistantSkill get skill => _currentSkill;
   AIModel get aiModel => _currentModel;
-  String get response => _response;
+  String? _error;
   bool get isLoading => _isLoading;
   bool get isListening => _isListening;
   bool get isStealth => _isStealth;
   bool get isInterviewMode => _isInterviewMode;
+  String get response => _response;
+  String? get error => _error;
   File? get lastCapture => _lastCapture;
   TextEditingController get textController => _textController;
 
@@ -145,9 +147,15 @@ class AssistantProvider extends ChangeNotifier {
     }
   }
 
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
+
   Future<void> ask(String prompt, {File? screenCapture, File? audioFile}) async {
     _isLoading = true;
     _response = ''; // Clear previous response
+    _error = null; // Clear previous error
     if (screenCapture != null) _lastCapture = screenCapture;
     notifyListeners();
 
@@ -164,7 +172,8 @@ class AssistantProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      _response = 'Error: $e';
+      GhostLogger.e('AI Error', tag: 'AssistantProvider', error: e);
+      _error = e.toString();
       notifyListeners();
     } finally {
       _isLoading = false;

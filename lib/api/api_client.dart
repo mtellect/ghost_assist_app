@@ -27,7 +27,6 @@ class ApiClient {
       AuthenticationInterceptor(),
       BodyInterceptor(),
       ErrorInterceptor(),
-      ChuckerDioInterceptor(),
     ]);
   }
 
