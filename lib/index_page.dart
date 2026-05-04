@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'assistant_page.dart';
-import '../settings/pages/settings_page.dart';
+import 'features/assistant/assistant_page.dart';
+import 'features/settings/pages/settings_page.dart';
 
 class IndexPage extends StatefulWidget {
   const IndexPage({super.key});
