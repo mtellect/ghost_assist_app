@@ -26,6 +26,36 @@ class AssistantFooter extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Text Input Field
+          Container(
+            constraints: const BoxConstraints(maxHeight: 120),
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.03),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+            ),
+            child: TextField(
+              controller: provider.textController,
+              maxLines: null,
+              minLines: 1,
+              style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.4),
+              cursorColor: Colors.blueAccent,
+              decoration: InputDecoration(
+                hintText: 'Type a question...',
+                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 12),
+                contentPadding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
+                border: InputBorder.none,
+                suffixIcon: Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: IconButton(
+                    icon: const Icon(Icons.send_rounded, size: 18, color: Colors.blueAccent),
+                    onPressed: provider.sendTextQuery,
+                  ),
+                ),
+              ),
+            ),
+          ),
           const Text(
             'SELECT INTERVIEW SKILL',
             style: TextStyle(

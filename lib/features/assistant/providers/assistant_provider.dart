@@ -21,6 +21,7 @@ class AssistantProvider extends ChangeNotifier {
   bool _isListening = false;
   bool _isStealth = true;
   File? _lastCapture;
+  final TextEditingController _textController = TextEditingController();
 
   AssistantProvider({
     required IAssistantService assistantService,
@@ -37,6 +38,7 @@ class AssistantProvider extends ChangeNotifier {
   bool get isListening => _isListening;
   bool get isStealth => _isStealth;
   File? get lastCapture => _lastCapture;
+  TextEditingController get textController => _textController;
 
   void setSkill(AssistantSkill skill) {
     _currentSkill = skill;
@@ -159,5 +161,23 @@ class AssistantProvider extends ChangeNotifier {
   void resetChat() {
     _assistantService.resetChat();
     clearResponse();
+  }
+
+  Future<void> sendTextQuery() async {
+    final text = _textController.text.trim();
+    if (text.isEmpty) return;
+
+    _textController.clear();
+    
+    // Auto-capture screen if it's a text query to provide context
+    final capture = await _captureService.captureScreen();
+    
+    await ask(text, screenCapture: capture);
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
   }
 }
