@@ -28,7 +28,7 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
   if (Platform.isWindows) {
     await glass.Window.setEffect(
       effect: glass.WindowEffect.acrylic,
-      color: const Color(0xCC0A0A0B),
+      color: const Color(0x660A0A0B),
     );
   } else if (Platform.isMacOS) {
     await glass.Window.setEffect(

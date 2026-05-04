@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
-import '../widgets/settings_header.dart';
 import '../widgets/settings_footer.dart';
 import '../widgets/vault_settings_tab.dart';
 import '../widgets/prompt_settings_tab.dart';
@@ -54,7 +53,6 @@ class _SettingsPageState extends State<SettingsPage> with SingleTickerProviderSt
         color: const Color(0xFF0F0F0F),
         child: Column(
           children: [
-            SettingsHeader(onBack: widget.onBack),
             TabBar(
               controller: _tabController,
               indicatorColor: Colors.blueAccent,

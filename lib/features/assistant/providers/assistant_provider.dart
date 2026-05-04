@@ -159,6 +159,12 @@ class AssistantProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> smartAsk(String prompt) async {
+    // Automatically capture screen for contextual expert actions
+    final file = await _captureService.captureScreen();
+    await ask(prompt, screenCapture: file);
+  }
+
   void clearResponse() {
     _response = '';
     _lastCapture = null;

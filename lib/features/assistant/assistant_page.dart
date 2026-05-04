@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'widgets/assistant_header.dart';
 import 'widgets/assistant_message_list.dart';
 import 'widgets/assistant_footer.dart';
 
@@ -13,11 +12,10 @@ class AssistantPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
-        AssistantHeader(onSettingsToggle: onSettingsOpen),
-        const Expanded(child: AssistantMessageList()),
-        const AssistantFooter(),
+        Expanded(child: AssistantMessageList()),
+        AssistantFooter(),
       ],
     );
   }

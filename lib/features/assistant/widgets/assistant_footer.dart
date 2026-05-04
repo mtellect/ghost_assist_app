@@ -26,6 +26,40 @@ class AssistantFooter extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Expert Actions (Cluely Style)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildExpertAction(
+                  'Assist',
+                  Icons.auto_awesome,
+                  Colors.blueAccent,
+                  () {}, // Standard chat
+                ),
+                _buildExpertAction(
+                  'What should I say?',
+                  Icons.chat_bubble_outline,
+                  Colors.white70,
+                  () => provider.smartAsk('Based on the conversation and current screen state, what is the most effective thing for me to say next to impress the interviewer?'),
+                ),
+                _buildExpertAction(
+                  'Follow-ups',
+                  Icons.question_answer_outlined,
+                  Colors.white70,
+                  () => provider.smartAsk('What are 3 strategic follow-up questions I could ask right now to show deep technical curiosity or leadership?'),
+                ),
+                _buildExpertAction(
+                  'Recap',
+                  Icons.history,
+                  Colors.white70,
+                  () => provider.smartAsk('Provide a concise bulleted recap of the conversation so far, focusing on key technical points and my contributions.'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
           // Text Input Field
           Container(
             constraints: const BoxConstraints(maxHeight: 120),
@@ -92,6 +126,34 @@ class AssistantFooter extends StatelessWidget {
           const SizedBox(height: 8),
           const StatusBar(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildExpertAction(String label, IconData icon, Color color, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(4),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 12, color: color.withValues(alpha: 0.6)),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color.withValues(alpha: 0.7),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
