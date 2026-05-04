@@ -44,6 +44,9 @@ class AssistantService implements IAssistantService {
     File? screenCapture,
     File? audioFile,
   }) async {
+    // Ensure keys are up to date from SettingsProvider before every request
+    _syncKeys();
+
     final systemPrompt = getSystemPrompt(skill);
     final fullPrompt = '$systemPrompt\n\n$prompt';
 
@@ -78,6 +81,18 @@ class AssistantService implements IAssistantService {
     _geminiService.resetChat();
     _openaiService.resetChat();
     _claudeService.resetChat();
+  }
+
+  void _syncKeys() {
+    try {
+      final settings = getIt<SettingsProvider>();
+      
+      _geminiService.updateApiKey(settings.geminiKey);
+      _openaiService.updateApiKey(settings.openaiKey);
+      _claudeService.updateApiKey(settings.anthropicKey);
+    } catch (e) {
+      GhostLogger.w('Failed to sync API keys: $e', tag: 'AssistantService');
+    }
   }
 
   @override

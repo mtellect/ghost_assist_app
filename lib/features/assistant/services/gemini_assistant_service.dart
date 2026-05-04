@@ -6,22 +6,38 @@ import 'i_assistant_service.dart';
 import '../../../core/utils/logger.dart';
 
 class GeminiAssistantService implements IAssistantService {
-  final String apiKey;
-  late final Map<AIModel, GenerativeModel> _models;
+  String _apiKey;
+  Map<AIModel, GenerativeModel> _models = {};
   AIModel _currentModel = AIModel.geminiFlash;
   final List<Content> _history = [];
 
-  GeminiAssistantService({required this.apiKey}) {
+  GeminiAssistantService({required String apiKey}) : _apiKey = apiKey {
+    _initModels();
+  }
+
+  void _initModels() {
+    if (_apiKey.isEmpty) {
+      GhostLogger.w('Gemini API Key is empty. Service will fail until key is provided.', tag: 'GeminiService');
+      return;
+    }
+    
     _models = {
       AIModel.geminiPro: GenerativeModel(
         model: AIModel.geminiPro.id,
-        apiKey: apiKey,
+        apiKey: _apiKey,
       ),
       AIModel.geminiFlash: GenerativeModel(
         model: AIModel.geminiFlash.id,
-        apiKey: apiKey,
+        apiKey: _apiKey,
       ),
     };
+  }
+
+  void updateApiKey(String newKey) {
+    if (_apiKey == newKey) return;
+    _apiKey = newKey;
+    _initModels();
+    GhostLogger.i('Gemini API Key updated.', tag: 'GeminiService');
   }
 
   @override
@@ -37,7 +53,15 @@ class GeminiAssistantService implements IAssistantService {
     File? audioFile,
   }) async {
     try {
-      final activeModel = _models[_currentModel]!;
+      if (_apiKey.isEmpty) {
+        return 'Error: Gemini API Key is missing. Please set it in Settings.';
+      }
+
+      final activeModel = _models[_currentModel];
+      if (activeModel == null) {
+        return 'Error: Gemini model not initialized. Check your API key.';
+      }
+
       final List<Part> parts = [TextPart(prompt)];
 
       if (screenCapture != null) {

@@ -9,7 +9,7 @@ import '../../../core/utils/logger.dart';
 import '../../../api/base_api.dart';
 
 class OpenAiAssistantService implements IAssistantService {
-  final String apiKey;
+  String apiKey;
   final ApiClient apiClient;
   AIModel _currentModel = AIModel.gpt4o;
   final List<Map<String, dynamic>> _history = [];
@@ -18,8 +18,21 @@ class OpenAiAssistantService implements IAssistantService {
     required this.apiKey,
     required this.apiClient,
   }) {
-    OpenAI.apiKey = apiKey;
-    OpenAI.requestsTimeOut = const Duration(seconds: 60);
+    _initOpenAI();
+  }
+
+  void _initOpenAI() {
+    if (apiKey.isNotEmpty) {
+      OpenAI.apiKey = apiKey;
+      OpenAI.requestsTimeOut = const Duration(seconds: 60);
+    }
+  }
+
+  void updateApiKey(String newKey) {
+    if (apiKey == newKey) return;
+    apiKey = newKey;
+    _initOpenAI();
+    GhostLogger.i('OpenAI API Key updated.', tag: 'OpenAIService');
   }
 
   @override

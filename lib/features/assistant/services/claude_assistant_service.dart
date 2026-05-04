@@ -6,13 +6,24 @@ import 'i_assistant_service.dart';
 import '../../../core/utils/logger.dart';
 
 class ClaudeAssistantService implements IAssistantService {
-  final String apiKey;
+  String _apiKey;
   AIModel _currentModel = AIModel.claude35Sonnet;
   final List<Message> _history = [];
-  late final AnthropicClient _client;
+  late AnthropicClient _client;
 
-  ClaudeAssistantService({required this.apiKey}) {
-    _client = AnthropicClient(apiKey: apiKey);
+  ClaudeAssistantService({required String apiKey}) : _apiKey = apiKey {
+    _initClient();
+  }
+
+  void _initClient() {
+    _client = AnthropicClient(apiKey: _apiKey);
+  }
+
+  void updateApiKey(String newKey) {
+    if (_apiKey == newKey) return;
+    _apiKey = newKey;
+    _initClient();
+    GhostLogger.i('Claude API Key updated.', tag: 'ClaudeService');
   }
 
   @override
@@ -28,6 +39,10 @@ class ClaudeAssistantService implements IAssistantService {
     File? audioFile,
   }) async {
     try {
+      if (_apiKey.isEmpty) {
+        return 'Error: Claude API Key is missing. Please set it in Settings.';
+      }
+
       // Temporary: Text-only implementation to ensure compilation
       final userMessage = Message(
         role: MessageRole.user,
