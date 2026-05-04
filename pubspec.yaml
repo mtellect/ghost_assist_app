@@ -112,6 +112,7 @@ flutter:
 
 msix_config:
   display_name: Ghost Assist
+  executable_name: Ghost Assist.exe
   publisher_display_name: MtellecT
   publisher: CN=MtellecT
   identity_name: com.mtellect.ghostassist
