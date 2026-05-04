@@ -120,37 +120,39 @@ class GhostHeader extends StatelessWidget {
 
   Widget _buildCollapsedContent() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      width: 350,
+      height: 45,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1B).withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white10),
+        color: const Color(0xFF16191D).withValues(alpha: 0.95),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 15, spreadRadius: 2),
         ],
       ),
       child: InkWell(
         onTap: onCollapseToggle,
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.auto_awesome, color: Colors.blueAccent, size: 16),
-            SizedBox(width: 8),
-            Icon(Icons.keyboard_arrow_down, size: 14, color: Colors.white60),
-            SizedBox(width: 4),
-            Text(
-              'ASK',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.2,
+            const Icon(Icons.auto_awesome, color: Colors.blueAccent, size: 14),
+            const SizedBox(width: 8),
+            const Text('👻', style: TextStyle(fontSize: 14)),
+            const SizedBox(width: 8),
+            const Expanded(
+              child: Text(
+                'GHOST ASSIST',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+            Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.white.withValues(alpha: 0.4)),
           ],
         ),
       ),
