@@ -9,8 +9,10 @@ class AudioInterceptorService implements IAudioInterceptorService {
   bool _isListening = false;
   StreamSubscription<Amplitude>? _amplitudeSub;
   DateTime? _lastVoiceTime;
-  final double _silenceThreshold = -35.0; // More sensitive to catch quiet speech
-  final Duration _silenceDuration = const Duration(milliseconds: 5000); // 5s for interview-ready standby
+  final double _silenceThreshold = -40.0; // Very sensitive to catch whispers
+  final Duration _silenceDuration = const Duration(milliseconds: 6000); // 6s for maximum stability
+  double _movingAverageAmplitude = -100.0;
+  final double _smoothingFactor = 0.3; // Weight of new samples
 
   @override
   bool get isListening => _isListening;
@@ -35,12 +37,15 @@ class AudioInterceptorService implements IAudioInterceptorService {
         _amplitudeSub = _recorder.onAmplitudeChanged(const Duration(milliseconds: 100)).listen((
           amp,
         ) async {
-          if (amp.current > _silenceThreshold) {
+          // Update moving average: smoother signal prevents jittery stops
+          _movingAverageAmplitude = (_movingAverageAmplitude * (1 - _smoothingFactor)) + (amp.current * _smoothingFactor);
+
+          if (_movingAverageAmplitude > _silenceThreshold) {
             _lastVoiceTime = DateTime.now();
           } else {
             if (_lastVoiceTime != null &&
                 DateTime.now().difference(_lastVoiceTime!) > _silenceDuration) {
-              GhostLogger.i('Silence detected, auto-stopping...', tag: 'AudioService');
+              GhostLogger.i('Definitive silence detected (MA: ${_movingAverageAmplitude.toStringAsFixed(1)}dB), auto-stopping...', tag: 'AudioService');
               final savedPath = await stopListening();
               if (savedPath != null && onAutoStop != null) {
                 onAutoStop(savedPath);
