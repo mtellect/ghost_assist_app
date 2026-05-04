@@ -119,39 +119,39 @@ class GhostHeader extends StatelessWidget {
   }
 
   Widget _buildCollapsedContent() {
-    return Center(
-      child: Container(
-        height: 32,
-
-        decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1B).withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A1B).withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: onCollapseToggle,
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.auto_awesome, color: Colors.blueAccent, size: 16),
+            SizedBox(width: 8),
+            Icon(Icons.keyboard_arrow_down, size: 14, color: Colors.white60),
+            SizedBox(width: 4),
+            Text(
+              'ASK',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.2,
+              ),
             ),
           ],
-        ),
-        child: InkWell(
-          onTap: onCollapseToggle,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(width: 12),
-              const Icon(Icons.auto_awesome_motion, size: 14, color: Colors.blueAccent),
-              const SizedBox(width: 8),
-              Icon(Icons.keyboard_arrow_down, size: 14, color: Colors.white.withValues(alpha: 0.6)),
-              const SizedBox(width: 4),
-              const Text(
-                'Ask',
-                style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 12),
-            ],
-          ),
         ),
       ),
     );
