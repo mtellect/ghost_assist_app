@@ -73,19 +73,20 @@ class AssistantFooter extends StatelessWidget {
               controller: provider.textController,
               maxLines: null,
               minLines: 1,
+              textAlignVertical: TextAlignVertical.center,
               style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.4),
               cursorColor: Colors.blueAccent,
               decoration: InputDecoration(
+                isDense: true,
                 hintText: 'Type a question...',
                 hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 12),
-                contentPadding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 border: InputBorder.none,
-                suffixIcon: Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: IconButton(
-                    icon: const Icon(Icons.send_rounded, size: 18, color: Colors.blueAccent),
-                    onPressed: provider.sendTextQuery,
-                  ),
+                suffixIconConstraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                suffixIcon: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.send_rounded, size: 18, color: Colors.blueAccent),
+                  onPressed: provider.sendTextQuery,
                 ),
               ),
             ),
