@@ -72,6 +72,15 @@ class GhostHeader extends StatelessWidget {
           if (!isSettings) ...[
             IconButton(
               icon: Icon(
+                provider.isInterviewMode ? Icons.forum : Icons.forum_outlined,
+                size: 18,
+                color: provider.isInterviewMode ? Colors.blueAccent : Colors.white38,
+              ),
+              onPressed: provider.toggleInterviewMode,
+              tooltip: 'Interview Mode (Continuous Standby)',
+            ),
+            IconButton(
+              icon: Icon(
                 provider.isListening ? Icons.mic : Icons.mic_none,
                 size: 18,
                 color: provider.isListening ? Colors.redAccent : Colors.white60,

@@ -20,6 +20,7 @@ class AssistantProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isListening = false;
   bool _isStealth = true;
+  bool _isInterviewMode = false;
   File? _lastCapture;
   final TextEditingController _textController = TextEditingController();
 
@@ -37,8 +38,14 @@ class AssistantProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isListening => _isListening;
   bool get isStealth => _isStealth;
+  bool get isInterviewMode => _isInterviewMode;
   File? get lastCapture => _lastCapture;
   TextEditingController get textController => _textController;
+
+  void toggleInterviewMode() {
+    _isInterviewMode = !_isInterviewMode;
+    notifyListeners();
+  }
 
   void setSkill(AssistantSkill skill) {
     _currentSkill = skill;
@@ -110,6 +117,7 @@ class AssistantProvider extends ChangeNotifier {
       }
     } else {
       await _audioService.startListening(
+        isInterviewMode: _isInterviewMode,
         onAutoStop: (path) async {
           _isListening = false;
           notifyListeners();
@@ -126,8 +134,8 @@ class AssistantProvider extends ChangeNotifier {
             GhostLogger.i('Audio auto-stop: recording too short or empty, skipping.', tag: 'AssistantProvider');
           }
 
-          // AUTO-RESTART: Stay on standby for spontaneous questions
-          if (!_isListening) {
+          // AUTO-RESTART: Only if Interview Mode is active
+          if (!_isListening && _isInterviewMode) {
              toggleListening(); 
           }
         },

@@ -9,16 +9,21 @@ class AudioInterceptorService implements IAudioInterceptorService {
   bool _isListening = false;
   StreamSubscription<Amplitude>? _amplitudeSub;
   DateTime? _lastVoiceTime;
-  final double _silenceThreshold = -40.0; // Very sensitive to catch whispers
-  final Duration _silenceDuration = const Duration(milliseconds: 6000); // 6s for maximum stability
+  double _silenceThreshold = -30.0; 
+  Duration _silenceDuration = const Duration(milliseconds: 2000);
   double _movingAverageAmplitude = -100.0;
-  final double _smoothingFactor = 0.3; // Weight of new samples
+  final double _smoothingFactor = 0.3; 
 
   @override
   bool get isListening => _isListening;
 
   @override
-  Future<void> startListening({Function(String path)? onAutoStop}) async {
+  Future<void> startListening({bool isInterviewMode = false, Function(String path)? onAutoStop}) async {
+    // Set dynamic thresholds based on mode
+    _silenceThreshold = isInterviewMode ? -40.0 : -30.0;
+    _silenceDuration = isInterviewMode ? const Duration(milliseconds: 6000) : const Duration(milliseconds: 2000);
+    _movingAverageAmplitude = -100.0; // Reset moving average
+
     try {
       if (await _recorder.hasPermission()) {
         const config = RecordConfig(
