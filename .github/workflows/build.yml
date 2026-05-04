@@ -37,15 +37,25 @@ jobs:
       - name: 🏗 Build Release
         run: flutter build windows --release
 
-      - name: 📦 Archive Release
-        shell: pwsh
-        run: |
-          Get-ChildItem -Path build\windows\x64\runner\Release | Compress-Archive -DestinationPath ghost-assist-windows.zip
+      - name: 📦 Create MSIX Installer
+        run: flutter pub run msix:create
 
       - name: 📂 Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ghost-assist-windows
+          name: ghost-assist-windows-installer
+          path: build\windows\x64\runner\Release\*.msix
+          retention-days: 7
+
+      - name: 📦 Archive Portable Release (ZIP)
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path build\windows\x64\runner\Release | Compress-Archive -DestinationPath ghost-assist-windows.zip
+
+      - name: 📂 Upload Portable Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ghost-assist-windows-portable
           path: ghost-assist-windows.zip
           retention-days: 7
 
