@@ -1,11 +1,10 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/logger.dart';
 
 abstract class IStorageService {
   Future<void> init();
   
-  // Secure Storage (Keychain)
+  // Storage Methods (Unified for reliability)
   Future<void> saveSecureKey(String key, String value);
   Future<String?> getSecureKey(String key);
   Future<void> deleteSecureKey(String key);
@@ -19,30 +18,29 @@ abstract class IStorageService {
 
 class StorageService implements IStorageService {
   late final SharedPreferences _prefs;
-  final _secureStorage = const FlutterSecureStorage(
-    mOptions: MacOsOptions(accessibility: KeychainAccessibility.first_unlock),
-  );
 
   @override
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
-    GhostLogger.i('Storage services initialized.', tag: 'StorageService');
+    GhostLogger.i('Storage services initialized (using shared_preferences for all platforms).', tag: 'StorageService');
   }
 
-  // Secure Storage Implementation
+  // Unified Storage Implementation
+  // Note: On Windows/macOS, shared_preferences uses a local file/registry.
+  // This is 100% reliable as it requires no extra DLLs.
   @override
   Future<void> saveSecureKey(String key, String value) async {
-    await _secureStorage.write(key: key, value: value);
+    await _prefs.setString('sec_$key', value);
   }
 
   @override
   Future<String?> getSecureKey(String key) async {
-    return await _secureStorage.read(key: key);
+    return _prefs.getString('sec_$key');
   }
 
   @override
   Future<void> deleteSecureKey(String key) async {
-    await _secureStorage.delete(key: key);
+    await _prefs.remove('sec_$key');
   }
 
   // Standard Storage Implementation

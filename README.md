@@ -19,7 +19,23 @@ Ghost Assist has transitioned to a **Skill-Based Architecture**. Choose your int
 
 ---
 
-## 🚀 Getting Started
+## 🚀 How to Run (Release)
+
+### **Windows**
+1. **Download**: Get `ghost-assist-windows.zip` from GitHub.
+2. **Extract All**: Right-click the ZIP and select **"Extract All"**. 
+   - ⚠️ **Important**: Do not run the `.exe` from inside the ZIP. You must extract the entire folder, as the `.exe` depends on the `.dll` files next to it.
+3. **Launch**: Open the extracted folder and run **`Ghost Assist.exe`**.
+
+### **macOS**
+1. **Download**: Get `ghost-assist-macos.zip`.
+2. **Extract**: Double-click to extract the `Ghost Assist.app`.
+3. **Move**: Drag the app to your `/Applications` folder.
+4. **First Run**: Right-click the app and select **"Open"** to bypass security warnings.
+
+---
+
+## 💻 Developer Setup
 
 This project uses **[FVM](https://fvm.app/)** to ensure SDK consistency across platforms.
 
