@@ -125,6 +125,11 @@ class AssistantProvider extends ChangeNotifier {
           } else {
             GhostLogger.i('Audio auto-stop: recording too short or empty, skipping.', tag: 'AssistantProvider');
           }
+
+          // AUTO-RESTART: Stay on standby for spontaneous questions
+          if (!_isListening) {
+             toggleListening(); 
+          }
         },
       );
       _isListening = _audioService.isListening;
