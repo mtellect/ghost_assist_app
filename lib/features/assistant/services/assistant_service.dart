@@ -8,6 +8,7 @@ import 'claude_assistant_service.dart';
 import '../../settings/providers/settings_provider.dart';
 import '../../../core/startup/startup_service.dart';
 import '../../../core/utils/logger.dart';
+import '../../../api/base_api.dart';
 
 class AssistantService implements IAssistantService {
   final GeminiAssistantService _geminiService;
@@ -20,8 +21,12 @@ class AssistantService implements IAssistantService {
     required String geminiApiKey,
     required String openaiApiKey,
     required String anthropicApiKey,
+    required ApiClient apiClient,
   })  : _geminiService = GeminiAssistantService(apiKey: geminiApiKey),
-        _openaiService = OpenAiAssistantService(apiKey: openaiApiKey),
+        _openaiService = OpenAiAssistantService(
+          apiKey: openaiApiKey,
+          apiClient: apiClient,
+        ),
         _claudeService = ClaudeAssistantService(apiKey: anthropicApiKey);
 
   @override

@@ -46,6 +46,7 @@ class StartUpService implements IStartUpService {
         geminiApiKey: config.geminiApiKey,
         openaiApiKey: config.openaiApiKey,
         anthropicApiKey: config.anthropicApiKey,
+        apiClient: getIt<ApiClient>(),
       );
     });
   }
