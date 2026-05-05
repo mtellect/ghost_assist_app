@@ -45,7 +45,7 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
     maximumSize: const Size(600, 900),
     center: true,
     backgroundColor: Colors.transparent,
-    skipTaskbar: false,
+    skipTaskbar: true, // Hide from taskbar/dock for extra stealth
     titleBarStyle: TitleBarStyle.hidden,
     alwaysOnTop: true,
   );
@@ -55,12 +55,21 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
     await windowManager.focus();
     await windowManager.setAsFrameless();
     await windowManager.setHasShadow(true);
+    
+    // macOS Specific: Ensure window follows to Full Screen spaces
+    if (Platform.isMacOS) {
+       // This allows the HUD to appear over full-screen apps and follow across Spaces
+       await windowManager.setVisibleOnAllWorkspaces(true, visibleOnFullScreen: true);
+    }
+
     GhostLogger.i('Window ready and shown.', tag: 'App');
+    await windowManager.setAlwaysOnTop(true);
   });
 
   // Enable Stealth Mode by default
   await WindowStealth.setStealthMode(true);
   await windowManager.setIgnoreMouseEvents(false);
+  await windowManager.setAlwaysOnTop(true);
   await windowManager.setOpacity(1.0);
 
   // Initialize HotKeys
@@ -98,6 +107,14 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
     modifiers: [HotKeyModifier.alt],
     identifier: 'toggle_stealth',
     onPressed: () => assistantProvider.toggleStealth(),
+  );
+
+  // Option + C: Toggle Click-Through
+  await hotKeyService.registerHotKey(
+    keyCode: PhysicalKeyboardKey.keyC,
+    modifiers: [HotKeyModifier.alt],
+    identifier: 'toggle_click_through',
+    onPressed: () => assistantProvider.toggleClickThrough(),
   );
 
   GhostLogger.i('Starting runApp...', tag: 'App');

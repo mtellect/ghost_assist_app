@@ -89,6 +89,15 @@ class GhostHeader extends StatelessWidget {
             ),
             IconButton(
               icon: Icon(
+                provider.isClickThrough ? Icons.mouse : Icons.mouse_outlined,
+                size: 18,
+                color: provider.isClickThrough ? Colors.cyanAccent : Colors.white38,
+              ),
+              onPressed: provider.toggleClickThrough,
+              tooltip: 'Click-Through Mode (Alt + C)',
+            ),
+            IconButton(
+              icon: Icon(
                 provider.isStealth ? Icons.visibility_off : Icons.visibility,
                 size: 18,
                 color: provider.isStealth ? Colors.greenAccent : Colors.redAccent,

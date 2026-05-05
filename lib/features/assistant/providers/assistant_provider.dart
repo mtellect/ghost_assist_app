@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ghost_assist_app/core/utils/logger.dart';
 import 'package:window_manager/window_manager.dart';
@@ -21,6 +22,7 @@ class AssistantProvider extends ChangeNotifier {
   bool _isListening = false;
   bool _isStealth = true;
   bool _isInterviewMode = false;
+  bool _isClickThrough = false;
   File? _lastCapture;
   final TextEditingController _textController = TextEditingController();
 
@@ -39,14 +41,38 @@ class AssistantProvider extends ChangeNotifier {
   bool get isListening => _isListening;
   bool get isStealth => _isStealth;
   bool get isInterviewMode => _isInterviewMode;
+  bool get isClickThrough => _isClickThrough;
   String get response => _response;
   String? get error => _error;
   File? get lastCapture => _lastCapture;
   TextEditingController get textController => _textController;
 
+  Future<void> toggleClickThrough() async {
+    _isClickThrough = !_isClickThrough;
+    await windowManager.setIgnoreMouseEvents(_isClickThrough);
+    notifyListeners();
+  }
+
+  Timer? _contextWatchTimer;
+
   void toggleInterviewMode() {
     _isInterviewMode = !_isInterviewMode;
+    if (_isInterviewMode) {
+      _startContextWatch();
+    } else {
+      _contextWatchTimer?.cancel();
+    }
     notifyListeners();
+  }
+
+  void _startContextWatch() {
+    _contextWatchTimer?.cancel();
+    _contextWatchTimer = Timer.periodic(const Duration(seconds: 15), (timer) async {
+      if (_isInterviewMode && !_isLoading && !_isListening) {
+        // Silently capture context to "read" captions or screen changes
+        await captureRegion(silent: true);
+      }
+    });
   }
 
   void setSkill(AssistantSkill skill) {
@@ -74,13 +100,14 @@ class AssistantProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> captureRegion() async {
+  Future<void> captureRegion({bool silent = false}) async {
     final file = await _captureService.captureRegion();
     if (file != null) {
-      await ask(
-        'Analyze this screen content and provide help based on the current skill.',
-        screenCapture: file,
-      );
+      final prompt = silent 
+        ? 'Observe the screen for any updates, captions, or interviewer questions. If there is a new question or critical change, summarize it. Otherwise, just update your context.'
+        : 'Analyze this screen content and provide help based on the current skill.';
+      
+      await ask(prompt, screenCapture: file);
     }
   }
 
