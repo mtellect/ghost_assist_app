@@ -65,7 +65,12 @@ add_subdirectory("runner")
 
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
+# Disable install rule generation for plugins. This prevents embedded third-party
+# libraries (like ggml in whisper_ggml_plus) from injecting broken install commands 
+# that cause the MSB3073 failure during the INSTALL.vcxproj phase.
+set(CMAKE_SKIP_INSTALL_RULES ON)
 include(flutter/generated_plugins.cmake)
+set(CMAKE_SKIP_INSTALL_RULES OFF)
 
 
 # === Installation ===
