@@ -55,18 +55,23 @@ class LiveCaptionView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: Text(
-              provider.currentTranscript,
-              key: ValueKey(provider.currentTranscript),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                height: 1.4,
-              ),
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: provider.currentTranscript.asMap().entries.map((entry) {
+              final isLast = entry.key == provider.currentTranscript.length - 1;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  entry.value,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: isLast ? 1.0 : 0.4),
+                    fontSize: 14,
+                    fontWeight: isLast ? FontWeight.w600 : FontWeight.w400,
+                    height: 1.4,
+                  ),
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),

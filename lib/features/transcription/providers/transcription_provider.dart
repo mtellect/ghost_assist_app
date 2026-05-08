@@ -12,7 +12,7 @@ class TranscriptionProvider extends ChangeNotifier {
   final AudioRecorder _recorder = AudioRecorder();
 
   bool _isTranscribing = false;
-  String _currentTranscript = '';
+  final List<String> _currentTranscript = [];
   final List<String> _history = [];
   Timer? _chunkTimer;
   int _chunkCount = 0;
@@ -21,7 +21,7 @@ class TranscriptionProvider extends ChangeNotifier {
     : _whisperService = whisperService;
 
   bool get isTranscribing => _isTranscribing;
-  String get currentTranscript => _currentTranscript;
+  List<String> get currentTranscript => _currentTranscript;
   List<String> get history => _history;
 
   Future<void> startLiveTranscription() async {
@@ -41,7 +41,8 @@ class TranscriptionProvider extends ChangeNotifier {
     }
 
     _isTranscribing = true;
-    _currentTranscript = 'Listening...';
+    _currentTranscript.clear();
+    _currentTranscript.add('Listening...');
     _history.clear();
     notifyListeners();
 
@@ -89,13 +90,19 @@ class TranscriptionProvider extends ChangeNotifier {
 
   Future<void> _processChunk(String path) async {
     final text = await _whisperService.transcribe(path);
-
+    
     if (text != null && text.isNotEmpty) {
-      _currentTranscript = text;
+      // Remove placeholder if it exists
+      _currentTranscript.remove('Listening...');
+      
+      _currentTranscript.add(text);
       _history.add(text);
-
-      // Keep history manageable
-      if (_history.length > 50) _history.removeAt(0);
+      
+      // Keep active transcript view to last 5 lines for HUD readability
+      if (_currentTranscript.length > 5) _currentTranscript.removeAt(0);
+      
+      // Keep session history manageable
+      if (_history.length > 500) _history.removeAt(0);
 
       notifyListeners();
 
