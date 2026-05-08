@@ -10,6 +10,7 @@ import 'core/startup/startup_service.dart';
 import 'core/utils/logger.dart';
 import 'features/assistant/providers/assistant_provider.dart';
 import 'features/settings/providers/settings_provider.dart';
+import 'features/transcription/providers/transcription_provider.dart';
 import 'index_page.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'core/services/hotkey_service.dart';
@@ -37,7 +38,6 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
   }
 
   GhostLogger.i('Initializing window...', tag: 'App');
-  final bool isDebug = environment.key == EnvironmentKeys.staging;
 
   WindowOptions windowOptions = WindowOptions(
     size: const Size(600, 900),
@@ -123,6 +123,7 @@ Future<void> runApplication({required ApiEnvironmentEnum environment}) async {
       providers: [
         ChangeNotifierProvider.value(value: getIt<AssistantProvider>()),
         ChangeNotifierProvider.value(value: getIt<SettingsProvider>()),
+        ChangeNotifierProvider.value(value: getIt<TranscriptionProvider>()),
       ],
       child: const GhostAssistApp(),
     ),

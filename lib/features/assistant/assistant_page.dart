@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'widgets/assistant_message_list.dart';
 import 'widgets/assistant_footer.dart';
+import '../transcription/widgets/live_caption_view.dart';
 
 class AssistantPage extends StatelessWidget {
   final VoidCallback onSettingsOpen;
@@ -15,6 +16,7 @@ class AssistantPage extends StatelessWidget {
     return const Column(
       children: [
         Expanded(child: AssistantMessageList()),
+        LiveCaptionView(), // NEW: Floating captions overlay
         AssistantFooter(),
       ],
     );

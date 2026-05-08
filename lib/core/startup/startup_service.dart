@@ -10,6 +10,9 @@ import '../services/hotkey_service.dart';
 import '../services/storage_service.dart';
 import '../services/permission_service.dart';
 import '../../features/settings/providers/settings_provider.dart';
+import '../../features/transcription/services/i_whisper_service.dart';
+import '../../features/transcription/services/whisper_service.dart';
+import '../../features/transcription/providers/transcription_provider.dart';
 import 'i_startup_service.dart';
 
 import '../enums/api_environment_enum.dart';
@@ -35,6 +38,7 @@ class StartUpService implements IStartUpService {
     getIt.registerLazySingleton<IAudioInterceptorService>(() => AudioInterceptorService());
     getIt.registerLazySingleton<HotKeyService>(() => HotKeyService());
     getIt.registerLazySingleton<PermissionService>(() => PermissionService());
+    getIt.registerLazySingleton<IWhisperService>(() => WhisperService());
 
     // 4. AI Orchestrator (Registered as a lazy singleton, keys will be fetched during init)
     getIt.registerLazySingleton<IAssistantService>(() {
@@ -62,7 +66,13 @@ class StartUpService implements IStartUpService {
         assistantService: getIt<IAssistantService>(),
         audioService: getIt<IAudioInterceptorService>(),
         captureService: getIt<ScreenCaptureService>(),
+        transcriptionProvider: getIt<TranscriptionProvider>(),
       ),
+    );
+
+    // 3. Transcription Provider
+    getIt.registerLazySingleton<TranscriptionProvider>(
+      () => TranscriptionProvider(whisperService: getIt<IWhisperService>()),
     );
   }
 
@@ -86,5 +96,8 @@ class StartUpService implements IStartUpService {
 
     // 4. Hotkeys (System events)
     await getIt<HotKeyService>().init();
+
+    // 5. Whisper Model (Background load)
+    getIt<IWhisperService>().ensureModelLoaded();
   }
 }

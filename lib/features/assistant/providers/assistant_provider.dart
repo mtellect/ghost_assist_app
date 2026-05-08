@@ -8,12 +8,14 @@ import '../services/i_audio_interceptor_service.dart';
 import '../services/i_assistant_service.dart';
 import '../services/screen_capture_service.dart';
 import '../models/ai_model.dart';
+import '../../transcription/providers/transcription_provider.dart';
 import '../../../core/native/window_stealth.dart';
 
 class AssistantProvider extends ChangeNotifier {
   final IAssistantService _assistantService;
   final IAudioInterceptorService _audioService;
   final ScreenCaptureService _captureService;
+  final TranscriptionProvider _transcriptionProvider;
 
   AssistantSkill _currentSkill = AssistantSkill.flutter;
   AIModel _currentModel = AIModel.defaultModel;
@@ -30,9 +32,11 @@ class AssistantProvider extends ChangeNotifier {
     required IAssistantService assistantService,
     required IAudioInterceptorService audioService,
     required ScreenCaptureService captureService,
+    required TranscriptionProvider transcriptionProvider,
   }) : _assistantService = assistantService,
        _audioService = audioService,
-       _captureService = captureService;
+       _captureService = captureService,
+       _transcriptionProvider = transcriptionProvider;
 
   AssistantSkill get skill => _currentSkill;
   AIModel get aiModel => _currentModel;
@@ -46,6 +50,7 @@ class AssistantProvider extends ChangeNotifier {
   String? get error => _error;
   File? get lastCapture => _lastCapture;
   TextEditingController get textController => _textController;
+  bool get isTranscribing => _transcriptionProvider.isTranscribing;
 
   Future<void> toggleClickThrough() async {
     _isClickThrough = !_isClickThrough;
@@ -55,12 +60,20 @@ class AssistantProvider extends ChangeNotifier {
 
   Timer? _contextWatchTimer;
 
-  void toggleInterviewMode() {
+  void toggleInterviewMode() async {
     _isInterviewMode = !_isInterviewMode;
     if (_isInterviewMode) {
       _startContextWatch();
+      
+      // NEW: Start Live Transcription
+      GhostLogger.i('Interview Mode enabled: Starting live transcription...', tag: 'AssistantProvider');
+      await _transcriptionProvider.startLiveTranscription();
     } else {
       _contextWatchTimer?.cancel();
+      
+      // NEW: Stop Live Transcription
+      GhostLogger.i('Interview Mode disabled: Stopping live transcription.', tag: 'AssistantProvider');
+      await _transcriptionProvider.stopLiveTranscription();
     }
     notifyListeners();
   }
@@ -69,8 +82,9 @@ class AssistantProvider extends ChangeNotifier {
     _contextWatchTimer?.cancel();
     _contextWatchTimer = Timer.periodic(const Duration(seconds: 15), (timer) async {
       if (_isInterviewMode && !_isLoading && !_isListening) {
-        // Silently capture context to "read" captions or screen changes
-        await captureRegion(silent: true);
+        // Silently capture FULL screen context to "read" captions or screen changes
+        // Use captureScreen instead of captureRegion to avoid interactive selection
+        await captureFullScreen();
       }
     });
   }
@@ -193,6 +207,11 @@ class AssistantProvider extends ChangeNotifier {
         screenCapture: screenCapture,
         audioFile: audioFile,
       );
+
+      // NEW: Automatically include transcript history if in interview mode
+      if (_isInterviewMode && _transcriptionProvider.history.isNotEmpty) {
+        GhostLogger.d('Transcript context available (${_transcriptionProvider.history.length} segments).', tag: 'AssistantProvider');
+      }
 
       await for (final chunk in stream) {
         _response = chunk;
