@@ -35,7 +35,19 @@ jobs:
         run: flutter config --enable-windows-desktop
 
       - name: 🏗 Build Release
-        run: flutter build windows --release
+        run: flutter build windows --release --verbose
+
+      - name: 🚨 Dump CMake Install Logs on Failure
+        if: failure()
+        shell: pwsh
+        run: |
+          if (Test-Path "build\windows\x64\cmake_install.cmake") {
+            Write-Host "=== Rerunning cmake_install.cmake to capture raw errors ==="
+            & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DBUILD_TYPE=Release -P build\windows\x64\cmake_install.cmake
+          } else {
+            Write-Host "cmake_install.cmake not found."
+          }
+
 
       - name: 📦 Create MSIX Installer
         run: flutter pub run msix:create
