@@ -142,6 +142,12 @@ class AssistantProvider extends ChangeNotifier {
     if (_isListening) {
       final path = await _audioService.stopListening();
       _isListening = false;
+      
+      // Stop Live Transcription if not in interview mode
+      if (!_isInterviewMode) {
+        await _transcriptionProvider.stopLiveTranscription();
+      }
+      
       notifyListeners();
 
       if (path != null) {
@@ -159,6 +165,9 @@ class AssistantProvider extends ChangeNotifier {
         }
       }
     } else {
+      // Start Live Transcription
+      await _transcriptionProvider.startLiveTranscription();
+
       await _audioService.startListening(
         isInterviewMode: _isInterviewMode,
         onAutoStop: (path) async {
