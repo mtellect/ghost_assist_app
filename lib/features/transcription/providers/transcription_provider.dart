@@ -52,7 +52,9 @@ class TranscriptionProvider extends ChangeNotifier {
   Future<void> stopLiveTranscription() async {
     _isTranscribing = false;
     _chunkTimer?.cancel();
+    _chunkTimer = null;
     await _recorder.stop();
+    _currentTranscript.clear();
     notifyListeners();
   }
 
@@ -90,6 +92,8 @@ class TranscriptionProvider extends ChangeNotifier {
 
   Future<void> _processChunk(String path) async {
     final text = await _whisperService.transcribe(path);
+    
+    if (!_isTranscribing) return; // Guard: Don't process if stopped in the meantime
     
     if (text != null && text.isNotEmpty) {
       // Remove placeholder if it exists
