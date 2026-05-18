@@ -62,18 +62,20 @@ class AssistantProvider extends ChangeNotifier {
 
   void toggleInterviewMode() async {
     _isInterviewMode = !_isInterviewMode;
+    GhostLogger.i('Interview Mode toggled: $_isInterviewMode', tag: 'AssistantProvider');
+    
     if (_isInterviewMode) {
       _startContextWatch();
-      
-      // NEW: Start Live Transcription
-      GhostLogger.i('Interview Mode enabled: Starting live transcription...', tag: 'AssistantProvider');
-      await _transcriptionProvider.startLiveTranscription();
+      if (!_isListening) {
+        await toggleListening();
+      }
     } else {
       _contextWatchTimer?.cancel();
-      
-      // NEW: Stop Live Transcription
-      GhostLogger.i('Interview Mode disabled: Stopping live transcription.', tag: 'AssistantProvider');
-      await _transcriptionProvider.stopLiveTranscription();
+      if (_isListening) {
+        await toggleListening();
+      } else {
+        await _transcriptionProvider.stopLiveTranscription();
+      }
     }
     notifyListeners();
   }

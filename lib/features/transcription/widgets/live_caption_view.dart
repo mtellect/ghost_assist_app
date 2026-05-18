@@ -8,8 +8,8 @@ class LiveCaptionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<TranscriptionProvider>();
-    
-    if (!provider.isTranscribing && provider.history.isEmpty) {
+
+    if (!provider.isTranscribing) {
       return const SizedBox.shrink();
     }
 

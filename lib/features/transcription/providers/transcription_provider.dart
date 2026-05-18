@@ -53,7 +53,13 @@ class TranscriptionProvider extends ChangeNotifier {
     _isTranscribing = false;
     _chunkTimer?.cancel();
     _chunkTimer = null;
-    await _recorder.stop();
+    try {
+      if (await _recorder.isRecording()) {
+        await _recorder.stop();
+      }
+    } catch (e) {
+      GhostLogger.w('Defensive recorder stop warning: $e', tag: 'TranscriptionProvider');
+    }
     _currentTranscript.clear();
     notifyListeners();
   }
@@ -92,19 +98,19 @@ class TranscriptionProvider extends ChangeNotifier {
 
   Future<void> _processChunk(String path) async {
     final text = await _whisperService.transcribe(path);
-    
+
     if (!_isTranscribing) return; // Guard: Don't process if stopped in the meantime
-    
+
     if (text != null && text.isNotEmpty) {
       // Remove placeholder if it exists
       _currentTranscript.remove('Listening...');
-      
+
       _currentTranscript.add(text);
       _history.add(text);
-      
+
       // Keep active transcript view to last 5 lines for HUD readability
       if (_currentTranscript.length > 5) _currentTranscript.removeAt(0);
-      
+
       // Keep session history manageable
       if (_history.length > 500) _history.removeAt(0);
 

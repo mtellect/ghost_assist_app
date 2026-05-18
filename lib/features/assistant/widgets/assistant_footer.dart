@@ -1,26 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/assistant_provider.dart';
 import 'skill_selector.dart';
 import 'assistant_action_button.dart';
 import 'status_bar.dart';
 
-class AssistantFooter extends StatelessWidget {
+class AssistantFooter extends StatefulWidget {
   const AssistantFooter({super.key});
+
+  @override
+  State<AssistantFooter> createState() => _AssistantFooterState();
+}
+
+class _AssistantFooterState extends State<AssistantFooter> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+          if (HardwareKeyboard.instance.isShiftPressed) {
+            // Shift + Enter: Manually insert a newline at the cursor position
+            final provider = context.read<AssistantProvider>();
+            final controller = provider.textController;
+            final text = controller.text;
+            final selection = controller.selection;
+
+            final start = selection.start;
+            final end = selection.end;
+
+            if (start < 0 || end < 0) {
+              controller.text = '$text\n';
+            } else {
+              final newText = text.replaceRange(start, end, '\n');
+              controller.value = TextEditingValue(
+                text: newText,
+                selection: TextSelection.collapsed(offset: start + 1),
+              );
+            }
+            return KeyEventResult.handled; // Handled the event
+          } else {
+            // Enter alone: Submit
+            context.read<AssistantProvider>().sendTextQuery();
+            return KeyEventResult.handled; // Intercept event to prevent newline
+          }
+        }
+        return KeyEventResult.ignored;
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.read<AssistantProvider>();
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.3),
-        border: Border(
-          top: BorderSide(
-            color: Colors.white.withValues(alpha: 0.05),
-          ),
-        ),
+        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -41,19 +88,25 @@ class AssistantFooter extends StatelessWidget {
                   'What should I say?',
                   Icons.chat_bubble_outline,
                   Colors.white70,
-                  () => provider.smartAsk('Based on the conversation and current screen state, what is the most effective thing for me to say next to impress the interviewer?'),
+                  () => provider.smartAsk(
+                    'Based on the conversation and current screen state, what is the most effective thing for me to say next to impress the interviewer?',
+                  ),
                 ),
                 _buildExpertAction(
                   'Follow-ups',
                   Icons.question_answer_outlined,
                   Colors.white70,
-                  () => provider.smartAsk('What are 3 strategic follow-up questions I could ask right now to show deep technical curiosity or leadership?'),
+                  () => provider.smartAsk(
+                    'What are 3 strategic follow-up questions I could ask right now to show deep technical curiosity or leadership?',
+                  ),
                 ),
                 _buildExpertAction(
                   'Recap',
                   Icons.history,
                   Colors.white70,
-                  () => provider.smartAsk('Provide a concise bulleted recap of the conversation so far, focusing on key technical points and my contributions.'),
+                  () => provider.smartAsk(
+                    'Provide a concise bulleted recap of the conversation so far, focusing on key technical points and my contributions.',
+                  ),
                 ),
               ],
             ),
@@ -71,6 +124,7 @@ class AssistantFooter extends StatelessWidget {
             ),
             child: TextField(
               controller: provider.textController,
+              focusNode: _focusNode,
               maxLines: null,
               minLines: 1,
               textAlignVertical: TextAlignVertical.center,

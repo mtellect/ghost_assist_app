@@ -20,8 +20,8 @@ class AudioInterceptorService implements IAudioInterceptorService {
   @override
   Future<void> startListening({bool isInterviewMode = false, Function(String path)? onAutoStop}) async {
     // Set dynamic thresholds based on mode
-    _silenceThreshold = isInterviewMode ? -40.0 : -30.0;
-    _silenceDuration = isInterviewMode ? const Duration(milliseconds: 6000) : const Duration(milliseconds: 2000);
+    _silenceThreshold = isInterviewMode ? -35.0 : -30.0;
+    _silenceDuration = isInterviewMode ? const Duration(milliseconds: 1800) : const Duration(milliseconds: 1500);
     _movingAverageAmplitude = -100.0; // Reset moving average
 
     try {
