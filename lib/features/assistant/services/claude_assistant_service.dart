@@ -80,14 +80,60 @@ class ClaudeAssistantService implements IAssistantService {
     File? screenCapture,
     File? audioFile,
   }) async* {
-    // Claude streaming to be implemented
-    final response = await getResponse(
-      skill: skill,
-      prompt: prompt,
-      screenCapture: screenCapture,
-      audioFile: audioFile,
-    );
-    yield response;
+    try {
+      if (_apiKey.isEmpty) {
+        yield 'Error: Claude API Key is missing. Please set it in Settings.';
+        return;
+      }
+
+      final userMessage = Message(
+        role: MessageRole.user,
+        content: MessageContent.text(prompt),
+      );
+
+      _history.add(userMessage);
+
+      final stream = _client.createMessageStream(
+        request: CreateMessageRequest(
+          model: Model.modelId(_currentModel.id),
+          messages: _history,
+          maxTokens: 4096,
+        ),
+      );
+
+      String fullResponse = '';
+
+      await for (final event in stream) {
+        String? chunk;
+        event.map(
+          messageStart: (e) {},
+          contentBlockStart: (e) {},
+          contentBlockDelta: (e) {
+            chunk = e.delta.text;
+          },
+          contentBlockStop: (e) {},
+          messageDelta: (e) {},
+          messageStop: (e) {},
+          ping: (e) {},
+          error: (e) {
+            throw Exception(e.error.message);
+          },
+        );
+
+        if (chunk != null) {
+          fullResponse += chunk!;
+          yield fullResponse;
+        }
+      }
+
+      _history.add(Message(
+        role: MessageRole.assistant,
+        content: MessageContent.text(fullResponse),
+      ));
+    } catch (e) {
+      GhostLogger.e('Claude Stream Error', tag: 'ClaudeService', error: e);
+      yield 'Claude Error: $e';
+    }
   }
 
   @override

@@ -10,7 +10,7 @@ enum AIModel {
   gpt4oMini('gpt-4o-mini', 'GPT-4o Mini', 'Fast & Efficient', AIProvider.openai),
 
   // Anthropic Models
-  claude35Sonnet('claude-3-5-sonnet-20240620', 'Claude 3.5 Sonnet', 'Most Intelligent', AIProvider.anthropic);
+  claude35Sonnet('claude-sonnet-4-6', 'Claude Sonnet 4.6', 'Most Intelligent (Sonnet 4.6)', AIProvider.anthropic);
 
   final String id;
   final String label;

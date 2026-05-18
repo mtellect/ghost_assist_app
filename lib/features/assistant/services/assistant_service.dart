@@ -96,6 +96,13 @@ class AssistantService implements IAssistantService {
         screenCapture: screenCapture,
         audioFile: audioFile,
       );
+    } else if (_currentModel.provider == AIProvider.anthropic) {
+      yield* _claudeService.getResponseStream(
+        skill: skill,
+        prompt: fullPrompt,
+        screenCapture: screenCapture,
+        audioFile: audioFile,
+      );
     } else {
       final response = await getResponse(
         skill: skill,
