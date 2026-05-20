@@ -3,6 +3,72 @@ platform :osx, '10.15'
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
+# ==============================================================================
+# 👻 Ghost Assist: Self-Healing Build Patch for whisper_ggml_plus
+# ==============================================================================
+whisper_plugin_path = File.expand_path('Flutter/ephemeral/.symlinks/plugins/whisper_ggml_plus', __dir__)
+
+if File.directory?(whisper_plugin_path)
+  # 1. Patch the podspec to include x86 architecture files
+  podspec_path = File.join(whisper_plugin_path, 'macos/whisper_ggml_plus.podspec')
+  if File.exist?(podspec_path)
+    podspec_content = File.read(podspec_path)
+    if podspec_content.include?("'Classes/whisper/ggml/src/ggml-cpu/arch/x86/**/*',")
+      puts "👻 Ghost Assist: Patching whisper_ggml_plus.podspec to include x86 files..."
+      patched_content = podspec_content.gsub(
+        "'Classes/whisper/ggml/src/ggml-cpu/arch/x86/**/*',", 
+        "# 'Classes/whisper/ggml/src/ggml-cpu/arch/x86/**/*',"
+      )
+      File.write(podspec_path, patched_content)
+    end
+  end
+
+  # 2. Add architecture guards to x86 quants.c
+  quants_x86_path = File.join(whisper_plugin_path, 'macos/Classes/whisper/ggml/src/ggml-cpu/arch/x86/quants.c')
+  if File.exist?(quants_x86_path)
+    quants_content = File.read(quants_x86_path)
+    unless quants_content.start_with?("#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__)")
+      puts "👻 Ghost Assist: Adding architecture guards to x86 quants.c..."
+      patched_quants = "#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__)\n" + quants_content + "\n#endif // x86 arch guards\n"
+      File.write(quants_x86_path, patched_quants)
+    end
+  end
+
+  # 3. Add architecture guards to x86 repack.cpp
+  repack_x86_path = File.join(whisper_plugin_path, 'macos/Classes/whisper/ggml/src/ggml-cpu/arch/x86/repack.cpp')
+  if File.exist?(repack_x86_path)
+    repack_content = File.read(repack_x86_path)
+    unless repack_content.start_with?("#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__)")
+      puts "👻 Ghost Assist: Adding architecture guards to x86 repack.cpp..."
+      patched_repack = "#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__)\n" + repack_content + "\n#endif // x86 arch guards\n"
+      File.write(repack_x86_path, patched_repack)
+    end
+  end
+
+  # 4. Add architecture guards to arm quants.c
+  quants_arm_path = File.join(whisper_plugin_path, 'macos/Classes/whisper/ggml/src/ggml-cpu/arch/arm/quants.c')
+  if File.exist?(quants_arm_path)
+    quants_content = File.read(quants_arm_path)
+    unless quants_content.start_with?("#if defined(__arm64__) || defined(__aarch64__) || defined(__arm__) || defined(_M_ARM) || defined(_M_ARM64)")
+      puts "👻 Ghost Assist: Adding architecture guards to arm quants.c..."
+      patched_quants = "#if defined(__arm64__) || defined(__aarch64__) || defined(__arm__) || defined(_M_ARM) || defined(_M_ARM64)\n" + quants_content + "\n#endif // arm arch guards\n"
+      File.write(quants_arm_path, patched_quants)
+    end
+  end
+
+  # 5. Add architecture guards to arm repack.cpp
+  repack_arm_path = File.join(whisper_plugin_path, 'macos/Classes/whisper/ggml/src/ggml-cpu/arch/arm/repack.cpp')
+  if File.exist?(repack_arm_path)
+    repack_content = File.read(repack_arm_path)
+    unless repack_content.start_with?("#if defined(__arm64__) || defined(__aarch64__) || defined(__arm__) || defined(_M_ARM) || defined(_M_ARM64)")
+      puts "👻 Ghost Assist: Adding architecture guards to arm repack.cpp..."
+      patched_repack = "#if defined(__arm64__) || defined(__aarch64__) || defined(__arm__) || defined(_M_ARM) || defined(_M_ARM64)\n" + repack_content + "\n#endif // arm arch guards\n"
+      File.write(repack_arm_path, patched_repack)
+    end
+  end
+end
+# ==============================================================================
+
 project 'Runner', {
   'Debug' => :debug,
   'Profile' => :release,

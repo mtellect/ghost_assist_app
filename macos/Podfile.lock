@@ -73,9 +73,9 @@ SPEC CHECKSUMS:
   screen_retriever_macos: 452e51764a9e1cdb74b3c541238795849f21557f
   share_plus: 510bf0af1a42cd602274b4629920c9649c52f4cc
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
-  whisper_ggml_plus: 679c4d6243cd309dacdbb7ab4901466d3a49f51c
+  whisper_ggml_plus: afa9f52dd1062ae82cfbffad279151b66ccd7b59
   window_manager: b729e31d38fb04905235df9ea896128991cad99e
 
-PODFILE CHECKSUM: 54d867c82ac51cbd61b565781b9fada492027009
+PODFILE CHECKSUM: 2369c672638fba62f9cc6b5c6ce99e08930d79ce
 
 COCOAPODS: 1.16.2
